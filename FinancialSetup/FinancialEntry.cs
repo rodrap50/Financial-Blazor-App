@@ -10,6 +10,11 @@ namespace FinancialSetup
 
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
+
+        public string Record {
+            get { return "entry"; }
+        }
+     
         public string TransactionNumber { get; set; }
         public string AccountId { get; set; }
         public string EventId { get; set; }
@@ -18,6 +23,9 @@ namespace FinancialSetup
         public decimal Amount { get; set; }
         public FinancialEntryType EntryType { get; set; }
         public string CheckNumber { get; set; }
+        public string TransferToAccountId {get; set;}
+
+
     }
 
     public enum FinancialEntryType
@@ -31,6 +39,5 @@ namespace FinancialSetup
         [EnumMember(Value = "electronic")]
         Electronic
     }
-
 
 }
