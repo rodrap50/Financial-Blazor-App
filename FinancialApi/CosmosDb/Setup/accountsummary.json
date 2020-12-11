@@ -1,0 +1,8 @@
+{
+    "id": "1000",
+    "recordId": "1000",
+    "recordCode": "accountsummary",
+    "balance": 0.0,
+    "nextAccountNumber": "1001",
+    "accountSummaries": []
+}
