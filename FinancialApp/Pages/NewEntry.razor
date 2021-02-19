@@ -1,0 +1,110 @@
+﻿@page "/newEntry"
+@inject IJSRuntime JSRuntime ;
+<style>
+.myHeader {
+    background-color: rgb(0, 0, 0);
+    color: white;
+    text-align: center;
+    position: relative;
+    
+  }
+  .myDiv {
+    border: 1px solid black;
+    max-width: 600px;
+    min-width: 460px;
+    
+  }
+  .cell-75per{
+
+      padding-left: 5%;
+      width: 50%;
+  }
+  .cell-25per{
+      padding-left: 5%;
+      width: 25%;
+  }
+
+</style>
+
+<div class="myDiv">
+    <h3 class="myHeader">New Entry</h3>
+    <div class="row">
+        <div class="cell-25per">
+            <p>Entry Date:</p>
+        </div>
+        <div class="cell-75per">
+            <input type="date" @bind="submission.SubmissionDate"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="cell-25per">
+            <p>Select Name:</p>
+        </div>
+        <div class="cell-75per">
+            <input id="AccountSelect" list="Accounts" @onchange="@((args) => submission.FirstName = args.Value.ToString())"/>
+            <datalist class="col-4" id="Accounts">
+                @foreach (var account in Users)
+                {
+                    <option value="@account"></option>
+                }
+            </datalist>
+        </div>
+    </div>
+    <div class="row">
+        <div class="cell-25per">
+            <p>Event:</p>
+        </div>
+        <div class="cell-75per">
+            <input id="EventSelect" list="EventHandle" @onchange="@((args) => submission.Event = args.Value.ToString())"/>
+            <datalist id="EventHandle">
+            @foreach (var e in ListEvents)
+            {
+                <option value="@e"></option>
+                }
+            </datalist>
+        </div>
+    </div>
+    <div class="row">
+        <div class="cell-25per">
+            <p>Amount:</p>
+        </div>
+        <div class="cell-75per">
+            <input id="AmountEntry"  @bind="submission.Amount"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="cell-75per">
+            <button @onclick="ProcessClick">Submit Entry</button>
+        </div>
+    </div>
+
+</div>
+
+@code {
+
+  
+    bool confirmed;
+    public Entry submission = new Entry{SubmissionDate = DateTime.Today};
+    
+    public List<String> Users = new List<String>(){"Adam","Keith","fred","bob","Austin"};
+    public List<String> ListEvents = new List<String>(){"Campout1","Campout 2 ","Campout 3","Fundrais3 1","Fundraise2"};
+
+
+    public async void ProcessClick(){
+
+     if(submission.SubmissionDate > DateTime.Today){
+            await JSRuntime.InvokeAsync<bool>("alert", "Cannot submit date in future" );
+            return;           
+        }
+
+        submission.SubmitEntry();
+
+        string output = "The following data has been submitted: \r\nDate: " + submission.SubmissionDate.Date.ToString("MM/dd/yyyy") 
+                        + "\nName: " + submission.FirstName 
+                        + "\nEvent: " + submission.Event
+                        + "\nAmount: " + submission.Amount;
+        await JSRuntime.InvokeAsync<bool>("confirm", output );
+    }
+
+}
