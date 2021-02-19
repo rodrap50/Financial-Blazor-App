@@ -361,4 +361,7 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
+# Local Settings for Azure Functions
 local.settings.json
+
+FinancialApiClient/nuget.exe
