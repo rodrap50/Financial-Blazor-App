@@ -17,8 +17,8 @@ namespace Rodrap50.Financial.Api
 {
     public static class AccountHttpTrigger
     {
-        [FunctionName("GetAccounts")]
-        public static IActionResult GetAccounts(
+        [FunctionName("GetAccountsSummary")]
+        public static IActionResult GetAccountsSummary(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "accounts")] HttpRequest req,
              [CosmosDB(
                 databaseName: "Rodrap50",
@@ -32,6 +32,22 @@ namespace Rodrap50.Financial.Api
 
             return new OkObjectResult(accounts);
         }
+
+        [FunctionName("GetAccount")]
+        public static IActionResult GetAccount( [HttpTrigger(AuthorizationLevel.Function, "get", Route = "account/{id}")] HttpRequest req,
+             [CosmosDB(
+                databaseName: "Rodrap50",
+                collectionName: "Financials",
+                ConnectionStringSetting = "CosmosDBConnection",
+                Id = "{id}",
+                PartitionKey = "account")] AccountResponse account,
+                ILogger log){
+
+                     log.LogInformation("C# HTTP GetAccount trigger function processed a request.");
+
+            return new OkObjectResult(account);
+        }
+
 
 
         [FunctionName("CreateAccount")]
