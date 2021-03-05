@@ -1,0 +1,47 @@
+﻿@page "/accounts"
+@using FinancialApp.Data
+@using Newtonsoft.Json
+@inject HttpClient Http
+
+
+<h3>Accounts</h3>
+
+@if (accounts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Account</th>
+                <th>Name</th>
+                <th>Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var account in accounts.AccountSummaries)
+            {
+                <tr>
+                    <td>@account.RecordId</td>
+                    <td>@account.AccountName</td>
+                    <td>@account.Balance</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <p><b>Account Total:</b> @accounts.Balance</p>
+
+}
+
+@code {
+private AccountListing accounts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        HttpResponseMessage response = await Http.GetAsync("http://localhost:7071/api/accounts");
+        string responseBody = await response.Content.ReadAsStringAsync();
+        accounts = JsonConvert.DeserializeObject<AccountListing>(responseBody);
+    }
+}
