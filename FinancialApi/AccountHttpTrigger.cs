@@ -48,6 +48,31 @@ namespace Rodrap50.Financial.Api
             return new OkObjectResult(account);
         }
 
+        [FunctionName("UpdateAccountDetails")]
+        public static async Task<IActionResult> UpdateAccountDetails(
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "account/{id}")] HttpRequest request, 
+            [CosmosDB(
+                databaseName: "Rodrap50",
+                collectionName: "Financials",
+                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ILogger logger
+        ) {
+            logger.LogInformation("C# HTTP CreateAccount trigger function processed a request.");
+            string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
+            var account = JsonConvert.DeserializeObject<Account>(requestBody);
+            
+            StoredProcedureResponse<Account> sprocResponse = await client.ExecuteStoredProcedureAsync<Account>(
+                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountDetails/", new RequestOptions { PartitionKey = new PartitionKey("account") }, account);
+
+            account = sprocResponse.Response;
+   
+            StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
+                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, account);
+
+
+            return new OkObjectResult(account);
+        }
+
 
 
         [FunctionName("CreateAccount")]
@@ -77,5 +102,7 @@ namespace Rodrap50.Financial.Api
 
             return new OkObjectResult(document);
         }
+
+        
     }
 }
