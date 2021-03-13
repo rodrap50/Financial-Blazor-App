@@ -18,5 +18,9 @@ namespace Rodrap50.Financial.Api.Data.Responses
         public string NextAccountNumber {get; set;}
         [JsonProperty(PropertyName = "accountSummaries")]
         public AccountBase[] AccountSummaries {get; set;}
+        [JsonProperty(PropertyName="nextEventNumber")]
+        public string NextEventNumber {get; set;}
+        [JsonProperty(PropertyName="eventSummaries")]
+        public EventBase[] EventSummaries {get; set;}
     }
 }

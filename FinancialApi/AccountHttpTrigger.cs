@@ -34,38 +34,40 @@ namespace Rodrap50.Financial.Api
         }
 
         [FunctionName("GetAccount")]
-        public static IActionResult GetAccount( [HttpTrigger(AuthorizationLevel.Function, "get", Route = "account/{id}")] HttpRequest req,
+        public static IActionResult GetAccount([HttpTrigger(AuthorizationLevel.Function, "get", Route = "account/{id}")] HttpRequest req,
              [CosmosDB(
                 databaseName: "Rodrap50",
                 collectionName: "Financials",
                 ConnectionStringSetting = "CosmosDBConnection",
                 Id = "{id}",
                 PartitionKey = "account")] AccountResponse account,
-                ILogger log){
+                ILogger log)
+        {
 
-                     log.LogInformation("C# HTTP GetAccount trigger function processed a request.");
+            log.LogInformation("C# HTTP GetAccount trigger function processed a request.");
 
             return new OkObjectResult(account);
         }
 
         [FunctionName("UpdateAccountDetails")]
         public static async Task<IActionResult> UpdateAccountDetails(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "account/{id}")] HttpRequest request, 
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "account/{id}")] HttpRequest request,
             [CosmosDB(
                 databaseName: "Rodrap50",
                 collectionName: "Financials",
                 ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
                 ILogger logger
-        ) {
+        )
+        {
             logger.LogInformation("C# HTTP CreateAccount trigger function processed a request.");
             string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
             var account = JsonConvert.DeserializeObject<Account>(requestBody);
-            
+
             StoredProcedureResponse<Account> sprocResponse = await client.ExecuteStoredProcedureAsync<Account>(
                                                                 "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountDetails/", new RequestOptions { PartitionKey = new PartitionKey("account") }, account);
 
             account = sprocResponse.Response;
-   
+
             StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
                                                                 "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, account);
 
@@ -73,17 +75,26 @@ namespace Rodrap50.Financial.Api
             return new OkObjectResult(account);
         }
 
+        /* 
+        [FunctionName("DeleteAccount")]
+        */
+
+        /*
+        [FunctionName("CloseAccount")]
+        */
+
 
 
         [FunctionName("CreateAccount")]
         public static async Task<IActionResult> CreateAccount(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route="account")] HttpRequest request, 
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "account")] HttpRequest request,
             [CosmosDB(
                 databaseName: "Rodrap50",
                 collectionName: "Financials",
                 ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
                 ILogger logger
-        ) {
+        )
+        {
             logger.LogInformation("C# HTTP CreateAccount trigger function processed a request.");
             string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
             var input = JsonConvert.DeserializeObject<AccountCreateModel>(requestBody);
@@ -95,7 +106,7 @@ namespace Rodrap50.Financial.Api
             account.RecordId = sprocResponse.Response.AccountId;
 
             Document document = await client.CreateDocumentAsync("/dbs/Rodrap50/colls/Financials/", account);
-    
+
             StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
                                                                 "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, account);
 
@@ -103,6 +114,37 @@ namespace Rodrap50.Financial.Api
             return new OkObjectResult(document);
         }
 
-        
+        [FunctionName("CreateEvent")]
+        public static async Task<IActionResult> CreateEvent([HttpTrigger(AuthorizationLevel.Function, "put", Route = "event")] HttpRequest request,
+            [CosmosDB(
+                databaseName: "Rodrap50",
+                collectionName: "Financials",
+                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ILogger logger
+
+        )
+        {
+            logger.LogInformation("C# HTTP CreateEvent trigger function processed a request.");
+            string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
+            var input = JsonConvert.DeserializeObject<EventCreateModel>(requestBody);
+            var financialEvent = input.GenerateEvent();
+
+            StoredProcedureResponse<ReserveNextEventResponse> sprocResponse = await client.ExecuteStoredProcedureAsync<ReserveNextEventResponse>(
+                                                                "/dbs/Rodrap50/colls/Financials/sprocs/ReserveNextEvent/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") });
+
+            financialEvent.RecordId = sprocResponse.Response.EventId;
+
+            Document document = await client.CreateDocumentAsync("/dbs/Rodrap50/colls/Financials/", financialEvent);
+
+            StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
+                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateEventSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, financialEvent);
+
+
+            return new OkObjectResult(document);
+
+
+        }
+
+
     }
 }
