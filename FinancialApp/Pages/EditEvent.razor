@@ -1,0 +1,59 @@
+﻿@using System.Net.Http.Json
+@page "/event/{id}"
+@using FinancialApp.Data
+@using Newtonsoft.Json
+@inject HttpClient Http
+@inject Microsoft.AspNetCore.Components.NavigationManager navigation
+
+<h3>Edit</h3>
+
+@if (eventRecord == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+<div class="row">
+    <div class="col-md-4">
+        <form>
+             <div class="form-group">
+                <label asp-for="EventNumber" class="control-label">Event Number</label>
+                <label for="EventNumber" class="form-control">@eventRecord.RecordId</label>
+            </div>
+            <div class="form-group">
+                <label for="Name" class="control-label">Name</label>
+                <input for="Name" class="form-control" @bind="@eventRecord.EventName" />
+            </div>
+        </form>
+        <button @onclick="@(async () => await UpdateEvent())" class="btn btn-default">Save</button>
+        <button @onclick="@cancel" class="btn">Cancel</button>
+    </div>
+</div>
+}
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+
+    private FinancialEvent eventRecord;
+
+     protected override async Task OnInitializedAsync()
+    {
+        HttpResponseMessage response = await Http.GetAsync("http://localhost:7071/api/event/" + id);
+        string responseBody = await response.Content.ReadAsStringAsync();
+        eventRecord = JsonConvert.DeserializeObject<FinancialEvent>(responseBody);
+    }
+
+    protected async Task UpdateEvent()
+    {
+        await Http.PutAsJsonAsync("http://localhost:7071/api/event/" + id, eventRecord);
+        navigation.NavigateTo("/events");
+    }
+
+    void cancel()
+    {
+        navigation.NavigateTo("/events");
+
+    }
+
+}

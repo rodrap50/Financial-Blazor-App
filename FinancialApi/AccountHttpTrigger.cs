@@ -145,6 +145,47 @@ namespace Rodrap50.Financial.Api
 
         }
 
+        [FunctionName("UpdateEventDetails")]
+        public static async Task<IActionResult> UpdateEventDetails(
+           [HttpTrigger(AuthorizationLevel.Function, "put", Route = "event/{id}")] HttpRequest request,
+           [CosmosDB(
+                databaseName: "Rodrap50",
+                collectionName: "Financials",
+                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+               ILogger logger
+       )
+        {
+            logger.LogInformation("C# HTTP UpdateEventDetails trigger function processed a request.");
+            string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
+            var individualEvent = JsonConvert.DeserializeObject<FinancialEvent>(requestBody);
+
+            StoredProcedureResponse<FinancialEvent> sprocResponse = await client.ExecuteStoredProcedureAsync<FinancialEvent>(
+                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateEventDetails/", new RequestOptions { PartitionKey = new PartitionKey("event") }, individualEvent);
+
+            individualEvent = sprocResponse.Response;
+
+            StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
+                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateEventSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, individualEvent);
+
+
+            return new OkObjectResult(individualEvent);
+        }
+
+        [FunctionName("GetEvent")]
+        public static IActionResult GetEvent([HttpTrigger(AuthorizationLevel.Function, "get", Route = "event/{id}")] HttpRequest req,
+                    [CosmosDB(
+                databaseName: "Rodrap50",
+                collectionName: "Financials",
+                ConnectionStringSetting = "CosmosDBConnection",
+                Id = "{id}",
+                PartitionKey = "event")] FinancialEvent eventRecord,
+                       ILogger log)
+        {
+
+            log.LogInformation("C# HTTP GetEvent trigger function processed a request.");
+
+            return new OkObjectResult(eventRecord);
+        }
 
     }
 }

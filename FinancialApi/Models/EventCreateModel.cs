@@ -8,8 +8,8 @@ namespace Rodrap50.Financial.Api.Models {
         public string EventName {get; set;}
    
 
-        public Event GenerateEvent() {
-            Event factory = new Event();
+        public FinancialEvent GenerateEvent() {
+            FinancialEvent factory = new FinancialEvent();
             factory.EventName = this.EventName;
             factory.Balance = 0;
             return factory;

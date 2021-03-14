@@ -5,7 +5,7 @@ using Rodrap50.Financial.Api.Data.Base;
 
 namespace Rodrap50.Financial.Api.Data
 {
-    public class Event : EventBase {
+    public class FinancialEvent : EventBase {
 
         [JsonProperty(PropertyName = "transactions")]
         public List<string> Transactions {get; set;}

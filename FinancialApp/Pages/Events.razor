@@ -1,0 +1,72 @@
+﻿@page "/events"
+@using System.Net.Http.Json
+@using FinancialApp.Data
+@using Newtonsoft.Json
+@inject HttpClient Http
+@inject Microsoft.AspNetCore.Components.NavigationManager navigation
+
+<h3>Events</h3>
+
+@if (accounts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Event</th>
+                <th>Name</th>
+                <th>Balance</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var event_record in accounts.EventSummaries)
+            {
+                <tr>
+                    <td>@event_record.RecordId</td>
+                    <td>@event_record.EventName</td>
+                    <td>@event_record.Balance</td>
+                    <td><a class="btn btn-info" href="/event/@event_record.Id">Edit</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <form>
+        <h4>Add Event</h4>
+        <div class="form-group">
+            <label for="Name" class="control-label">Name</label>
+            <input for="Name" class="form-control" @bind="@eventname" />
+        </div>
+    </form>
+    <button @onclick="@AddEvent" class="btn btn-default">Add</button>
+}
+
+@code {
+    private AccountListing accounts;
+    private String eventname;
+
+    protected override async Task OnInitializedAsync()
+    {
+        HttpResponseMessage response = await Http.GetAsync("http://localhost:7071/api/accounts");
+        string responseBody = await response.Content.ReadAsStringAsync();
+        accounts = JsonConvert.DeserializeObject<AccountListing>(responseBody);
+
+        eventname = string.Empty;
+    }
+
+    protected async Task AddEvent(){
+
+        EventRequest newEvent = new EventRequest();
+        newEvent.EventName = eventname;
+        await Http.PutAsJsonAsync("http://localhost:7071/api/event", newEvent);
+        await OnInitializedAsync();
+    }
+
+    public class EventRequest {
+        [JsonProperty(PropertyName = "eventName")]
+        public string EventName { get; set; }
+    }
+}
