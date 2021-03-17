@@ -14,6 +14,7 @@ public class Entry
     public float Amount { get; set; }
     public string TransactionType { get; set; }
     public string Event { get; set; }
+    public string EventID {get;set; }
     private bool confirmed { get; set; }
 
     private string CombineName()
