@@ -6,13 +6,13 @@ function UpdateEventDetails(financial_event) {
 
     var event_record = {};
 
-    if (!account) throw new Error("[ERR-AR4004] The event is not defined.");
+    if (!financial_event) throw new Error("[ERR-AR4004] The event is not defined.");
 
-    // Query for the Account Summary Document
+    // Query for the Event Document
     var filterQuery =
     {
         'query' : 'SELECT * FROM Financials p where p.id = @eventid',
-        'parameters' : [{'name':'@eventid', 'value': account.id}] 
+        'parameters' : [{'name':'@eventid', 'value': financial_event.id}] 
     };
 
      var accept = container.queryDocuments(container.getSelfLink(), filterQuery, {},
