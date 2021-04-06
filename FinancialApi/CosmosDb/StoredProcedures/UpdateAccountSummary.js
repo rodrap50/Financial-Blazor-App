@@ -40,17 +40,10 @@ function UpdateAccountSummary(account) {
                 baseAccount.id = account.id;
                 baseAccount.recordId = account.recordId;
                 baseAccount.accountName = account.accountName;
+                baseAccount.softAccount = account.softAccount;
                 baseAccount.balance = account.balance;
                 accounts.accountSummaries.push(baseAccount);
             }
-            
-            var totalBalance = 0.0;
-            
-            accounts.accountSummaries.forEach(function (item, index, obj) {
-                totalBalance = totalBalance + item.balance;
-            });
-            
-            accounts.balance = totalBalance;
 
             var accept2 = container.replaceDocument(accounts._self, accounts,
                 function (err, itemReplaced) {

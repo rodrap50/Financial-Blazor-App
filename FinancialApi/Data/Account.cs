@@ -13,5 +13,6 @@ namespace Rodrap50.Financial.Api.Data
        [JsonProperty(PropertyName = "nextTransactionRecordId")]
         public string NextTransactionRecordId {get; set;} = "10000";
         
+        
     }
 }

@@ -16,32 +16,25 @@ else{
             </tr>
         </thead>
         <tbody>
-            @foreach (var event_record in accounts.EventSummaries)
-            {
-                <tr>
-                    <td>@event_record.RecordId</td>
-                    <td>@event_record.EventName</td>
-                    <td>@event_record.Balance</td>
-                    <td><a class="btn btn-info" href="/event/@event_record.Id">Edit</a></td>
-                </tr>
-            }
+            
         </tbody>
     </table>
     <form>
         <h4>Add Event</h4>
         <div class="form-group">
             <label for="Name" class="control-label">Name</label>
-            <input for="Name" class="form-control" @bind="@eventname" />
+            <!--<input for="Name" class="form-control" />-->
         </div>
     </form>
-    <button @onclick="@AddEvent" class="btn btn-default">Add</button>
+   
  
 
 }
 
 @code{
 
-    public TransactionListing transactions;
+
+    //public TransactionListing transactions;
 
 
 

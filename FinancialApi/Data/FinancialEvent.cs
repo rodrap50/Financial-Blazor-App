@@ -8,8 +8,9 @@ namespace Rodrap50.Financial.Api.Data
     public class FinancialEvent : EventBase {
 
         [JsonProperty(PropertyName = "transactions")]
-        public List<string> Transactions {get; set;}
+        public List<TransactionEntry> Transactions {get; set;}
         [JsonProperty(PropertyName = "transactionSummary")]
         public List<Transaction> TransactionSummary { get; set; }             
     }
+
 }

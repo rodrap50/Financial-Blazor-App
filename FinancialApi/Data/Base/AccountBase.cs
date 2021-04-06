@@ -16,6 +16,9 @@ namespace Rodrap50.Financial.Api.Data.Base
         [JsonProperty(PropertyName = "accountName")]
         public string AccountName {get; set;}
 
+        [JsonProperty(PropertyName="softAccount")]
+        public Boolean SoftAccount {get; set;}
+
         [JsonProperty(PropertyName = "balance")]
         public decimal Balance {get; set;}        
     }

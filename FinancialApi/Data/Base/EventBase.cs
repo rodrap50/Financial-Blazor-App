@@ -6,7 +6,7 @@ namespace Rodrap50.Financial.Api.Data.Base
 {
     public class EventBase {
         [JsonProperty(PropertyName = "id")]
-        public string Id {get; set; } = Guid.NewGuid().ToString(format: "N");
+        public string Id {get; set; } = Guid.NewGuid().ToString(format: "D");
         [JsonProperty(PropertyName = "recordCode")]
         public string RecordCode {get; set; } = "event";
         [JsonProperty(PropertyName = "recordId")]

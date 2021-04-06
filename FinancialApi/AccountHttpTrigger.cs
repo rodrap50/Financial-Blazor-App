@@ -187,5 +187,35 @@ namespace Rodrap50.Financial.Api
             return new OkObjectResult(eventRecord);
         }
 
+        [FunctionName("CreateTransaction")]
+        public static async Task<IActionResult> CreateTransaction([HttpTrigger(AuthorizationLevel.Function, "put", Route="transaction")] HttpRequest request,
+            [CosmosDB(
+                databaseName: "Rodrap50",
+                collectionName: "Financials",
+                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ILogger logger
+
+        )
+        {
+            logger.LogInformation("C# HTTP CreateTransaction trigger function processed a request.");
+            string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
+            var input = JsonConvert.DeserializeObject<TransactionCreateModel>(requestBody);
+            var transaction = input.GenerateTransaction();
+
+            StoredProcedureResponse<ReserveNextTransactionResponse> sprocResponse = await client.ExecuteStoredProcedureAsync<ReserveNextTransactionResponse>(
+                                                                "/dbs/Rodrap50/colls/Financials/sprocs/ReserveNextTransaction/", new RequestOptions { PartitionKey = new PartitionKey("account") }, transaction.GeneralAccountId);
+
+            transaction.RecordId = sprocResponse.Response.TransactionRecordId;
+
+            Document document = await client.CreateDocumentAsync("/dbs/Rodrap50/colls/Financials/", transaction);
+
+          //  StoredProcedureResponse<AccountResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountResponse>(
+          //                                                      "/dbs/Rodrap50/colls/Financials/sprocs/AddAccountTransaction/", new RequestOptions { PartitionKey = new PartitionKey("account") }, transaction);
+
+
+            return new OkObjectResult(document);
+
+
+        } 
     }
 }
