@@ -18,20 +18,46 @@ else
                 <th>Account</th>
                 <th>Name</th>
                 <th>Balance</th>
+                <th>Soft Account</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var account in accounts.AccountSummaries)
             {
+                @if(@account.SoftAccount == true) {
                 <tr>
                     <td>@account.RecordId</td>
                     <td>@account.AccountName</td>
                     <td>@account.Balance</td>
+                    <td>@account.SoftAccount</td>
                 </tr>
+                }
             }
         </tbody>
     </table>
-    <p><b>Account Total:</b> @accounts.Balance</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Account</th>
+                <th>Name</th>
+                <th>Balance</th>
+                <th>Soft Account</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var account in accounts.AccountSummaries)
+            {
+                @if(@account.SoftAccount == false) {
+                <tr>
+                    <td>@account.RecordId</td>
+                    <td>@account.AccountName</td>
+                    <td>@account.Balance</td>
+                    <td>@account.SoftAccount</td>
+                </tr>
+                }
+            }
+        </tbody>
+    </table>
 
 }
 

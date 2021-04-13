@@ -15,6 +15,9 @@ namespace FinancialApp.Data
         public string AccountName {get; set;}
 
         [JsonProperty(PropertyName = "balance")]
-        public decimal Balance {get; set;}        
+        public decimal Balance {get; set;}   
+
+        [JsonProperty(PropertyName="softAccount")]
+        public Boolean SoftAccount {get; set;}     
     }
 }

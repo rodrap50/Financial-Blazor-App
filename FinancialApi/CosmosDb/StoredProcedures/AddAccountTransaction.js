@@ -8,13 +8,13 @@ function AddAccountTransaction(transaction) {
 
     if (!transaction) throw new Error("[ERR-AR5004] The transaction is not defined.");
 
-    if(!transaction.fromAccountId && !transaction.toAccountId) throw new Error("[ERR-AR5005] The transaction must be associated to at least one account id.");
+    if(!transaction.fromAccountId && !transaction.toAccountId && !transaction.generalAccountId) throw new Error("[ERR-AR5005] The transaction must be associated to at least one account id.");
 
-    if(transaction.fromAccountId) {
+    if(transaction.generalAccountId) {
         var filterQuery =
         {
             'query' : 'SELECT * FROM Financials p where p.id = @accountid and p.recordCode = "account"',
-            'parameters' : [{'name':'@accountid', 'value': transaction.fromAccountId}] 
+            'parameters' : [{'name':'@accountid', 'value': transaction.generalAccountId}] 
         };
     
          var accept = container.queryDocuments(container.getSelfLink(), filterQuery, {},
@@ -25,11 +25,23 @@ function AddAccountTransaction(transaction) {
                 account_record = items[0];
     
                 if(!account_record) throw new Error("[ERR-AR1210] Account document not found.");
+
+                // Add Transaction
+                var trans_entry = {};
+                trans_entry.id = transaction.id;
+                trans_entry.amount = transaction.direction = 'credit' ? transaction.amount : (transaction.amount * -1);
+                if(!account_record.transactions) 
+                { account_record.transactions = []; }
+                
+                account_record.transactions.push(trans_entry);
+
+                account_record.balance = 0;
+
+                account_record.transactions.forEach(function (item, index, obj) {
+                  account_record.balance = account_record.balance + item.amount;
+                });
     
                 // Update the account information
-                account_record.accountName = account.accountName;
-                
-                
                 var accept2 = container.replaceDocument(account_record._self, account_record,
                     function (err, itemReplaced) {
                         if (err) throw "[ERR-AR1211] Unable to update the account document.";
