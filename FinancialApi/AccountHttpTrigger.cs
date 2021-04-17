@@ -209,7 +209,7 @@ namespace Rodrap50.Financial.Api
 
             Document document = await client.CreateDocumentAsync("/dbs/Rodrap50/colls/Financials/", transaction);
 
-            StoredProcedureResponse<AccountResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountResponse>(
+            StoredProcedureResponse<AccountResponse[]> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountResponse[]>(
                                                                 "/dbs/Rodrap50/colls/Financials/sprocs/AddAccountTransaction/", new RequestOptions { PartitionKey = new PartitionKey("account") }, transaction);
 
 
