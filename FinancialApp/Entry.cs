@@ -11,7 +11,7 @@ public class Entry
     public string FullName { get; }
     public long TransactionNumber { get; set; }
     public string Description { get; set; }
-    public float Amount { get; set; }
+    public decimal Amount { get; set; }
     public string TransactionType { get; set; }
     public string Event { get; set; }
     public string EventID {get;set; }

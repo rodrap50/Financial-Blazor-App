@@ -97,6 +97,8 @@ else
 
     bool confirmed;
     public Entry submission = new Entry { SubmissionDate = DateTime.Today };
+    public TransactionEntry transaction;
+    
 
     public List<String> Users = new List<String>() { "Adam", "Keith", "fred", "bob", "Austin" };
     public List<String> ListEvents = new List<String>() { "Campout1", "Campout 2 ", "Campout 3", "Fundrais3 1", "Fundraise2" };
@@ -104,6 +106,7 @@ else
 
     public async void ProcessClick()
     {
+        transaction = new TransactionEntry();
 
         if (submission.SubmissionDate > DateTime.Today)
         {
@@ -111,13 +114,21 @@ else
             return;
         }
 
-        submission.SubmitEntry();
+        transaction.Amount = submission.Amount;
+
 
         string output = "The following data has been submitted: \r\nDate: " + submission.SubmissionDate.Date.ToString("MM/dd/yyyy")
                         + "\nName: " + submission.FirstName
                         + "\nEvent: " + submission.Event
-                        + "\nAmount: " + submission.Amount;
-        await JSRuntime.InvokeAsync<bool>("confirm", output);
+                        + "\nAmount: " + transaction.Amount
+                        + "\nID:    " + transaction.Id;
+
+        if(await JSRuntime.InvokeAsync<bool>("confirm", output))
+        {   
+            Console.WriteLine("adding");
+            AddTransaction();
+        }
+
     }
 
     protected override async Task OnInitializedAsync()
@@ -127,6 +138,13 @@ else
         accounts = JsonConvert.DeserializeObject<AccountListing>(responseBody);
 
 
+    }
+
+    protected async Task AddTransaction()
+    {
+        await Http.PutAsJsonAsync("http://localhost:7071/api/transaction/" + transaction.Id, transaction);
+        navigation.NavigateTo("/NewEntry");
+        
     }
 
 }
