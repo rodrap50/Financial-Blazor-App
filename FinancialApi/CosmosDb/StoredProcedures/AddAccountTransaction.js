@@ -36,7 +36,7 @@ function AddAccountTransaction(transaction) {
                 if (transaction.transactionMethod == "transfer") {
                     trans_entry.amount = 0;
                 } else {
-                    trans_entry.amount = transaction.direction = 'credit' ? transaction.amount : (transaction.amount * -1);
+                    trans_entry.amount = transaction.direction == 'credit' ? transaction.amount : (transaction.amount * -1);
                 }
                 if (!account_record.transactions) { account_record.transactions = []; }
                 account_record.transactions.push(trans_entry);
@@ -93,7 +93,7 @@ function AddAccountTransaction(transaction) {
                 var trans_entry = {};
                 trans_entry.id = transaction.id;
               
-                trans_entry.amount = transaction.direction = 'credit' ? (transaction.amount * -1) : transaction.amount;
+                trans_entry.amount = transaction.direction == 'credit' ? (transaction.amount * -1) : transaction.amount;
                 
                 if (!account_record.transactions) { account_record.transactions = []; }
                 account_record.transactions.push(trans_entry);
@@ -151,7 +151,7 @@ function AddAccountTransaction(transaction) {
                 var trans_entry = {};
                 trans_entry.id = transaction.id;
               
-                trans_entry.amount = transaction.direction = 'credit' ? transaction.amount : (transaction.amount * -1);
+                trans_entry.amount = transaction.direction == 'credit' ? transaction.amount : (transaction.amount * -1);
                 
                 if (!account_record.transactions) { account_record.transactions = []; }
                 account_record.transactions.push(trans_entry);
