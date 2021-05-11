@@ -7,12 +7,14 @@ namespace Rodrap50.Financial.Api.Models {
     public class AccountCreateModel {
         public string AccountName {get; set;}
         public decimal Balance {get; set;}
+        public Boolean SoftAccount {get; set;}
     
 
         public Account GenerateAccount() {
             Account factory = new Account();
             factory.AccountName = this.AccountName;
             factory.Balance = this.Balance;
+            factory.SoftAccount = this.SoftAccount;
             return factory;
         }
     }
