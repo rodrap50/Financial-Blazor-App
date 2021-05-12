@@ -105,13 +105,14 @@ namespace Rodrap50.Financial.Api
 
             account.RecordId = sprocResponse.Response.AccountId;
 
-            Document document = await client.CreateDocumentAsync("/dbs/Rodrap50/colls/Financials/", account);
+            StoredProcedureResponse<AccountResponse> sprocResponse1 = await client.ExecuteStoredProcedureAsync<AccountResponse>("/dbs/Rodrap50/colls/Financials/sprocs/AddAccount/", new RequestOptions { PartitionKey = new PartitionKey("account") }, account);
+
 
             StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
                                                                 "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, account);
 
 
-            return new OkObjectResult(document);
+            return new OkObjectResult(sprocResponse1.Response);
         }
 
         [FunctionName("CreateEvent")]
