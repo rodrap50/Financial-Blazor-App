@@ -1,4 +1,5 @@
 @page "/EditTransactions"
+@inject IJSRuntime JSRuntime
 @using System.Net.Http.Json
 @using FinancialApp.Data
 @using Newtonsoft.Json
@@ -41,7 +42,7 @@ else
             </div>
             <div class="form-group">
                 <label asp-for="dateIncurred" class="control-label">Date Incurred</label>
-                <input for="dateIncurred" class="form-control" @bind="@record.DateIncurred" />
+                <input for="dateIncurred" class="form-control" type="date" @bind="@record.DateIncurred" />
             </div>
             <div class="form-group">
                 <label asp-for="description" class="control-label">Description</label>
@@ -70,11 +71,45 @@ else
 
 @code {
     public Transaction record = new Transaction();
-
+    private AccountListing accounts;
+    
+    public Entry submission = new Entry();
     protected override async Task OnInitializedAsync()
     {
-       
+        HttpResponseMessage response = await Http.GetAsync("http://localhost:7071/api/accounts");
+        string responseBody = await response.Content.ReadAsStringAsync();
+        accounts = JsonConvert.DeserializeObject<AccountListing>(responseBody);
+
+       // getGeneralAccount();
+
+
     }
+    
+    public async void ProcessClick()
+    {
+        
+        if (submission.SubmissionDate > DateTime.Today)
+        {
+            await JSRuntime.InvokeAsync<bool>("alert", "Cannot submit date in future");
+            return;
+        }
+
+        record.Amount = submission.Amount;
+
+
+        string output = "The following data has been submitted: \r\nDate: " + submission.SubmissionDate.Date.ToString("MM/dd/yyyy")
+                        + "\nName: " + submission.FirstName
+                        + "\nEvent: " + submission.Event
+                        + "\nAmount: " + record.Amount
+                        + "\nID:    " + record.Id;
+
+        if(await JSRuntime.InvokeAsync<bool>("confirm", output))
+        {   
+            Console.WriteLine("adding");
+            SaveTransaction();
+        }
+
+    }   
 
     protected async Task SaveTransaction()
     {
@@ -86,4 +121,20 @@ else
     {
         //navigation.NavigateTo("/transactions");
     }
+
+    
+    public void getGeneralAccount() 
+    {
+
+        foreach (var _account in accounts.AccountSummaries)
+        {
+            if(! _account.softAccount)
+            {
+                record.GeneralAccountId = _account.GeneralAccountId;
+                return;
+            }
+        }
+        return;
+    }
+    
 }
