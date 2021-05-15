@@ -20,6 +20,5 @@ namespace Rodrap50.Financial.Api.Data
         [JsonProperty(PropertyName = "transactionSummary")]
         public List<Transaction> TransactionSummary { get; set; }
 
-
     }
 }

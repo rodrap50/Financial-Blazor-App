@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Rodrap50.Financial.Api.Models;
 using Rodrap50.Financial.Api.Data;
+using Rodrap50.Financial.Api.Data.Base;
 using Rodrap50.Financial.Api.Data.Responses;
 
 namespace Rodrap50.Financial.Api
@@ -31,6 +33,29 @@ namespace Rodrap50.Financial.Api
             log.LogInformation("C# HTTP GetAccounts trigger function processed a request.");
 
             return new OkObjectResult(accounts);
+        }
+
+        [FunctionName("GetAccountsListing")]
+        public static async Task<IActionResult> GetAccountsListing(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "accounts/listing")] HttpRequest req,
+             [CosmosDB(
+                databaseName : "Rodrap50",
+                collectionName: "Financials",
+                ConnectionStringSetting = "CosmosDBConnection",
+                SqlQuery = "SELECT c.id, c.accountName, c.softAccountList FROM c WHERE c.recordCode = 'account' and c.softAccount = false")] IEnumerable<GeneralAccountEntry> generalAccounts,
+                ILogger logger
+        )
+        {
+            logger.LogInformation("C# HTTP GetAccountsListing trigger function processed a request.");
+            if (generalAccounts == null)
+            {
+                return new NotFoundResult();
+            }
+
+            return new OkObjectResult(generalAccounts);
+
+
+
         }
 
         [FunctionName("GetAccount")]
@@ -105,13 +130,14 @@ namespace Rodrap50.Financial.Api
 
             account.RecordId = sprocResponse.Response.AccountId;
 
-            Document document = await client.CreateDocumentAsync("/dbs/Rodrap50/colls/Financials/", account);
+            StoredProcedureResponse<AccountResponse> sprocResponse1 = await client.ExecuteStoredProcedureAsync<AccountResponse>("/dbs/Rodrap50/colls/Financials/sprocs/AddAccount/", new RequestOptions { PartitionKey = new PartitionKey("account") }, account);
+
 
             StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
                                                                 "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, account);
 
 
-            return new OkObjectResult(document);
+            return new OkObjectResult(sprocResponse1.Response);
         }
 
         [FunctionName("CreateEvent")]
@@ -188,7 +214,7 @@ namespace Rodrap50.Financial.Api
         }
 
         [FunctionName("CreateTransaction")]
-        public static async Task<IActionResult> CreateTransaction([HttpTrigger(AuthorizationLevel.Function, "put", Route="transaction")] HttpRequest request,
+        public static async Task<IActionResult> CreateTransaction([HttpTrigger(AuthorizationLevel.Function, "put", Route = "transaction")] HttpRequest request,
             [CosmosDB(
                 databaseName: "Rodrap50",
                 collectionName: "Financials",
@@ -216,6 +242,6 @@ namespace Rodrap50.Financial.Api
             return new OkObjectResult(document);
 
 
-        } 
+        }
     }
 }
