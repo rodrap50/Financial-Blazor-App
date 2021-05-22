@@ -35,27 +35,21 @@ namespace Rodrap50.Financial.Api
             return new OkObjectResult(accounts);
         }
 
-        [FunctionName("GetAccountsListing")]
-        public static async Task<IActionResult> GetAccountsListing(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "accounts/listing")] HttpRequest req,
-             [CosmosDB(
-                databaseName : "Rodrap50",
+
+        [FunctionName("GetListings")]
+        public static IActionResult GetListings(
+                [HttpTrigger(AuthorizationLevel.Function, "get", Route = "listings")] HttpRequest req,
+                 [CosmosDB(
+                databaseName: "Rodrap50",
                 collectionName: "Financials",
                 ConnectionStringSetting = "CosmosDBConnection",
-                SqlQuery = "SELECT c.id, c.accountName, c.softAccountList FROM c WHERE c.recordCode = 'account' and c.softAccount = false")] IEnumerable<GeneralAccountEntry> generalAccounts,
-                ILogger logger
-        )
+                Id = "1001",
+                PartitionKey = "accountsummary")] ListingsResponse listings,
+                    ILogger log)
         {
-            logger.LogInformation("C# HTTP GetAccountsListing trigger function processed a request.");
-            if (generalAccounts == null)
-            {
-                return new NotFoundResult();
-            }
+            log.LogInformation("C# HTTP GetListings trigger function processed a request.");
 
-            return new OkObjectResult(generalAccounts);
-
-
-
+            return new OkObjectResult(listings);
         }
 
         [FunctionName("GetAccount")]
@@ -96,6 +90,20 @@ namespace Rodrap50.Financial.Api
             StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
                                                                 "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, account);
 
+            Account generalAccount = null;
+
+            if (account.SoftAccount)
+            {
+                var docUri = UriFactory.CreateDocumentUri("Rodrap50", "Financials", account.GeneralAccountId);
+                generalAccount = await client.ReadDocumentAsync<Account>(docUri);
+            }
+            else
+            {
+                generalAccount = account;
+            }
+
+            StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<ListingsResponse>(
+                                                               "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountListing/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, generalAccount);
 
             return new OkObjectResult(account);
         }
@@ -135,6 +143,21 @@ namespace Rodrap50.Financial.Api
 
             StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
                                                                 "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, account);
+
+            Account generalAccount = null;
+
+            if (sprocResponse1.Response.SoftAccount)
+            {
+                var docUri = UriFactory.CreateDocumentUri("Rodrap50", "Financials", sprocResponse1.Response.GeneralAccountId);
+                generalAccount = await client.ReadDocumentAsync<Account>(docUri,  new RequestOptions { PartitionKey = new PartitionKey("account") });
+            }
+            else
+            {
+                generalAccount = sprocResponse1.Response;
+            }
+
+            StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<ListingsResponse>(
+                                                               "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountListing/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, generalAccount);
 
 
             return new OkObjectResult(sprocResponse1.Response);
