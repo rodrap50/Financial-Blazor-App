@@ -75,57 +75,44 @@ else
                         {
                             <option value="@SoftAccount">@SoftAccount.AccountName</option>
                         }
-                    </datalist> 
-                
+                    </datalist>                 
+            </div>            
+            <div class="form-group">             
+                <label asp-for="direction" class="control-label">Direction: @record.Direction </label>
+                <EditForm Model="@record">
+                <InputRadioGroup @bind-Value="record.Direction" >
+                        @foreach (var item in Enum.GetValues(typeof(DebitCreditType)))
+                        {   
+                            <label for="@item" class="control-label">@item</label>
+                            <InputRadio Value="@item" class="custom-radio" id="@item" />
+                            
+                        }
+                    </InputRadioGroup>
+                </EditForm>
             </div>
+
             
             <div class="form-group">
-                <!--
-                <label asp-for="direction" class="control-label">Direction</label>
-                <input for="direction" class="form-control" @bind="@record.Direction" />
-                -->
+                <label asp-for="transactionMethod" class="control-label">Transaction Method</label>
                 
-                    <label asp-for="direction" class="control-label">Direction: @record.Direction 
-                        <select Value="@record.Direction">
-
-                            @foreach (var item in Enum.GetValues(typeof(DebitCreditType)))
-                            {
-                                <option value="@item">@item</option>
+                <label asp-for="direction" class="control-label">Direction: @record.TransactionMethod </label>
+                    
+                    <EditForm Model="@record">
+                    <InputRadioGroup @bind-Value="record.TransactionMethod" >
+                            @foreach (var item in Enum.GetValues(typeof(TransactionType)))
+                            {   
+                                <label for="@item" class="control-label">@item</label>
+                                <InputRadio Value="@item" class="custom-radio" id="@item" />
+                                
                             }
-                            
-
-                        </select>
-                        
-                        <InputSelect @bind-Value="record.Direction">
-
-                            @foreach (var item in Enum.GetValues(typeof(DebitCreditType)))
-                            {
-                                <option value="@item">@item</option>
-                            }
-                            
-
-                        </InputSelect>
-
-                        <!--  Radio buttons 
-                        <label class="control-label">
-                            <input type="radio" for="direction" class="form-control" name="Credit" checked="@(radioSelectCode == 1)" @onchange="@(() => SetDirection(1); radioSelectCode = 1)"/>Credit  
-                        </label >
-                        <label class="control-label">
-                            <input type="radio" for="direction"  class="form-control" name="Debit" checked="@(radioSelectCode == 2)" @onchange="@(() => SetDirection(2); radioSelectCode = 2)"/>Debit  
-                        </label>
-                        <label class="control-label">
-                            <input type="radio" for="direction"  class="form-control" name="Transfer" checked="@(radioSelectCode == 3)" @onchange="@(() => SetDirection(3); radioSelectCode = 3)"/>Transfer  
-                        </label>         -->    
-                    </label>
-
+                        </InputRadioGroup>
+                    </EditForm>
+                
             </div>
+
             <div class="form-group">
                 <label asp-for="amount" class="control-label">Amount</label>
-                <input for="amount" class="form-control" @bind="@record.Amount"  />
-            </div>
-            <div class="form-group">
-                <label asp-for="transactionMethod" class="control-label">Transaction Method</label>
-                <input for="transactionMethod" class="form-control" @bind="@record.TransactionMethod"/>
+                <input type="number"for="amount" class="form-control" @bind="@record.Amount" placeholder="0.00"  />
             </div>
             <div class="form-group">
                 <label asp-for="description" class="control-label">Description</label>
@@ -139,6 +126,9 @@ else
     </div>
 </div>
 }
+
+
+
 
 @code {
 
