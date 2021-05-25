@@ -5,6 +5,7 @@
 @using Newtonsoft.Json
 @inject HttpClient Http
 @inject Microsoft.AspNetCore.Components.NavigationManager navigation
+@inject NavigationManager NavigationManager
 
 <h3>New Transaction</h3>
 
@@ -27,7 +28,7 @@
     -->
 
 
-@if (record == null)
+@if (listing.GeneralAccountEntries == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -36,33 +37,103 @@ else
 <div class="row">
     <div class="col-md-4">
         <form>
-             <div class="form-group">
-                <label asp-for="generalAcccountId" class="control-label">General Account Id</label>
-                <input for="generalAccountId" class="form-control" @bind="@record.GeneralAccountId" />
+             <div class="form-group" >
+                
+                <label asp-for="generalAcccountId" class="control-label">General Account : @selectedGenAcct.AccountName</label>  
+                
+                @if(listing.GeneralAccountEntries.Length > 1 && listing.GeneralAccountEntries != null)
+                {
+                    <input for="generalAccountId" list="GenAccountSel" class="form-control" placeholder="Select General Account..." @onchange="@((args) => SetGeneralAccount(args.Value.ToString()))" />
+                    
+                    <datalist id="GenAccountSel">
+                        @foreach (var GenAccount  in listing.GeneralAccountEntries)
+                        {
+                            <option value="@GenAccount.Id">@GenAccount.AccountName</option>
+                        }
+                    </datalist>
+                    
+                }
+                else
+                {
+                    selectedGenAcct = listing.GeneralAccountEntries[0];
+                }
+                
+                
             </div>
             <div class="form-group">
                 <label asp-for="dateIncurred" class="control-label">Date Incurred</label>
                 <input for="dateIncurred" class="form-control" type="date" @bind="@record.DateIncurred" />
             </div>
+            <div class="form-group" >
+                
+                <label asp-for="softAcccountId" class="control-label">Account Transaction : </label>  
+                
+                <input for="softAccountId" list="softAccountSel" class="form-control" placeholder="Select Account..." @onchange="@((args) => SetSoftAccount(args.Value.ToString()))" />
+                    
+                    <datalist id="softAccountSel">
+                        @foreach (var SoftAccount  in selectedGenAcct.SoftAccountList)
+                        {
+                            <option value="@SoftAccount">@SoftAccount.AccountName</option>
+                        }
+                    </datalist> 
+                
+            </div>
+            
+            <div class="form-group">
+                <!--
+                <label asp-for="direction" class="control-label">Direction</label>
+                <input for="direction" class="form-control" @bind="@record.Direction" />
+                -->
+                
+                    <label asp-for="direction" class="control-label">Direction: @record.Direction 
+                        <select Value="@record.Direction">
+
+                            @foreach (var item in Enum.GetValues(typeof(DebitCreditType)))
+                            {
+                                <option value="@item">@item</option>
+                            }
+                            
+
+                        </select>
+                        
+                        <InputSelect @bind-Value="record.Direction">
+
+                            @foreach (var item in Enum.GetValues(typeof(DebitCreditType)))
+                            {
+                                <option value="@item">@item</option>
+                            }
+                            
+
+                        </InputSelect>
+
+                        <!--  Radio buttons 
+                        <label class="control-label">
+                            <input type="radio" for="direction" class="form-control" name="Credit" checked="@(radioSelectCode == 1)" @onchange="@(() => SetDirection(1); radioSelectCode = 1)"/>Credit  
+                        </label >
+                        <label class="control-label">
+                            <input type="radio" for="direction"  class="form-control" name="Debit" checked="@(radioSelectCode == 2)" @onchange="@(() => SetDirection(2); radioSelectCode = 2)"/>Debit  
+                        </label>
+                        <label class="control-label">
+                            <input type="radio" for="direction"  class="form-control" name="Transfer" checked="@(radioSelectCode == 3)" @onchange="@(() => SetDirection(3); radioSelectCode = 3)"/>Transfer  
+                        </label>         -->    
+                    </label>
+
+            </div>
+            <div class="form-group">
+                <label asp-for="amount" class="control-label">Amount</label>
+                <input for="amount" class="form-control" @bind="@record.Amount"  />
+            </div>
+            <div class="form-group">
+                <label asp-for="transactionMethod" class="control-label">Transaction Method</label>
+                <input for="transactionMethod" class="form-control" @bind="@record.TransactionMethod"/>
+            </div>
             <div class="form-group">
                 <label asp-for="description" class="control-label">Description</label>
                 <input for="description" class="form-control" @bind="@record.Description" />
             </div>
-            <div class="form-group">
-                <label asp-for="direction" class="control-label">Direction</label>
-                <input for="direction" class="form-control" @bind="@record.Direction" />
-            </div>
-            <div class="form-group">
-                <label asp-for="amount" class="control-label">Amount</label>
-                <input for="amount" class="form-control" @bind="@record.Amount" />
-            </div>
-            <div class="form-group">
-                <label asp-for="transactionMethod" class="control-label">Transaction Method</label>
-                <input for="transactionMethod" class="form-control" @bind="@record.TransactionMethod" />
-            </div>
         </form>
         
-        <button @onclick="@(async () => await SaveTransaction())" class="btn btn-default">Save</button>
+        <button @onclick="@(async () => SaveTransaction())" class="btn btn-default">Save</button>
         <button @onclick="@cancel" class="btn">Cancel</button>
         
     </div>
@@ -70,25 +141,30 @@ else
 }
 
 @code {
-    public Transaction record = new Transaction();
-    private AccountListing accounts;
-    
+
+    public Transaction record = new Transaction{ DateIncurred = DateTime.Today};
+ 
     public Entry submission = new Entry();
+    int radioSelectCode = 1;
+    private GeneralAccountEntry selectedGenAcct = new GeneralAccountEntry();
+    private AccountEntry selectedSoftAcct = new AccountEntry();
+    public ListingsResponse listing =  new ListingsResponse();
+
+
     protected override async Task OnInitializedAsync()
     {
-        HttpResponseMessage response = await Http.GetAsync("http://localhost:7071/api/accounts");
+        HttpResponseMessage response = await Http.GetAsync("http://localhost:7071/api/listings");
         string responseBody = await response.Content.ReadAsStringAsync();
-        accounts = JsonConvert.DeserializeObject<AccountListing>(responseBody);
+        listing = JsonConvert.DeserializeObject<ListingsResponse>(responseBody);
 
-       // getGeneralAccount();
-
+        selectedGenAcct = listing.GeneralAccountEntries[0];
 
     }
     
     public async void ProcessClick()
     {
         
-        if (submission.SubmissionDate > DateTime.Today)
+        if (record.DateIncurred > DateTime.Today)
         {
             await JSRuntime.InvokeAsync<bool>("alert", "Cannot submit date in future");
             return;
@@ -111,9 +187,9 @@ else
 
     }   
 
-    protected async Task SaveTransaction()
+    public void SaveTransaction()
     {
-        await Http.PutAsJsonAsync("http://localhost:7071/api/transaction", record);
+        Http.PutAsJsonAsync("http://localhost:7071/api/transaction", record);
         //navigation.NavigateTo("/transactions");
     }
 
@@ -123,18 +199,57 @@ else
     }
 
     
-    public void getGeneralAccount() 
+    public void SetGeneralAccount(String selectedID) 
     {
-
-        foreach (var _account in accounts.AccountSummaries)
+        
+        foreach(GeneralAccountEntry GenAccount  in listing.GeneralAccountEntries)
         {
-            if(! _account.softAccount)
+            if(GenAccount.Id == selectedID)
             {
-                record.GeneralAccountId = _account.GeneralAccountId;
-                return;
+                selectedGenAcct = GenAccount;
+
             }
         }
-        return;
+               
+
     }
+
+       public void SetDirection (int d)
+    { 
+        /* 
+        switch(d)
+        {
+            case 1:
+                record.Direction = [EnumMember(Value="debit")] Debit,;
+                break;
+            case 2:
+                record.Direction = "Debit";
+                [EnumMember(Value="credit")]
+        Credit
+                break;
+            case 3:
+                record.Direction = "Transfer";
+                break;
+       
+
+        }
+         */
+    }
+
+    public void SetSoftAccount(String selectedID) 
+    {
+        
+        foreach(AccountEntry softAccount  in selectedGenAcct.SoftAccountList)
+        {
+            if(softAccount.Id == selectedID)
+            {
+                selectedSoftAcct = softAccount;
+
+            }
+        }
+               
+
+    }
+
     
 }
