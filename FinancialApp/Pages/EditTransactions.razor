@@ -96,7 +96,7 @@ else
                 <label asp-for="transactionMethod" class="control-label">Transaction Method</label>
                 
                 <label asp-for="direction" class="control-label">Direction: @record.TransactionMethod </label>
-                    
+                    <!-- Need to add a If transfer then select account to transfer too -->
                     <EditForm Model="@record">
                     <InputRadioGroup @bind-Value="record.TransactionMethod" >
                             @foreach (var item in Enum.GetValues(typeof(TransactionType)))
@@ -107,9 +107,24 @@ else
                             }
                         </InputRadioGroup>
                     </EditForm>
-                
-            </div>
 
+            </div>
+            @if(record.TransactionMethod == (TransactionType)TransactionType.Transfer){
+                <div class="form-group" >
+                
+                <label asp-for="softAcccountId" class="control-label">Account to Tansfer To : </label>  
+                
+                <input for="softAccountId" list="softAccountSel" class="form-control" placeholder="Select Account..." @onchange="@((args) => SetSoftAccount(args.Value.ToString()))" />
+                    
+                    <datalist id="softAccountSel">
+                        @foreach (var SoftAccount  in selectedGenAcct.SoftAccountList)
+                        {
+                            <option value="@SoftAccount">@SoftAccount.AccountName</option>
+                        }
+                    </datalist>                 
+                </div>
+
+            }
             <div class="form-group">
                 <label asp-for="amount" class="control-label">Amount</label>
                 <input type="number"for="amount" class="form-control" @bind="@record.Amount" placeholder="0.00"  />
