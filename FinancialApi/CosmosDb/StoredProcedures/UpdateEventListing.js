@@ -1,4 +1,4 @@
-function UpdateAccountListing(account) {
+function UpdateEventListing(eventRecord) {
 
     function SortOrder(prop) {    
         return function(a, b) {    
@@ -11,6 +11,7 @@ function UpdateAccountListing(account) {
         }    
     }   
 
+
     var context = getContext();
     var container = context.getCollection();
     var containerLink = container.getSelfLink();
@@ -18,7 +19,7 @@ function UpdateAccountListing(account) {
 
     var listings = {};
 
-    if (!account) throw new Error("[ERR-AR1004] The account is not defined.");
+    if (!eventRecord) throw new Error("[ERR-AR3004] The event is not defined.");
 
     // Query for the Account and Event Listing Document
     var filterQuery =
@@ -38,24 +39,23 @@ function UpdateAccountListing(account) {
 
             var listingMatch = false;
             
-            listings.generalAccountEntries.forEach(function (item, index, obj) {
-                if(item.id == account.id)
+            listings.eventEntries.forEach(function (item, index, obj) {
+                if(item.id == eventRecord.id)
                 {
-                    item.accountName = account.accountName;
-                    item.softAccountList = account.softAccountList;
+                    item.eventName = eventRecord.eventName;
                     listingMatch = true;
                 }
             });
             if(!listingMatch) {
-                // Add new general account entry
-                var baseAccount = {};
-                baseAccount.id = account.id;
-                baseAccount.accountName = account.accountName;
-                baseAccount.softAccountList = account.softAccountList;
-                listings.generalAccountEntries.push(baseAccount);
+                // Add new event entry
+                var baseEvent = {};
+                baseEvent.id = eventRecord.id;
+                baseEvent.eventName = eventRecord.eventName;
+               
+                listings.eventEntries.push(baseEvent);
             }
 
-            listings.generalAccountEntries.sort(SortOrder("accountName"));
+            listings.eventEntries.sort(SortOrder("eventName"));
 
             var accept2 = container.replaceDocument(listings._self, listings,
                 function (err, itemReplaced) {

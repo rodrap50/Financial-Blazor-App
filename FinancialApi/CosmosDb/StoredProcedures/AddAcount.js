@@ -1,4 +1,17 @@
 function AddAccount(account) {
+
+    function SortOrder(prop) {    
+        return function(a, b) {    
+            if (a[prop] > b[prop]) {    
+                return 1;    
+            } else if (a[prop] < b[prop]) {    
+                return -1;    
+            }    
+            return 0;    
+        }    
+    }   
+
+
     var context = getContext();
     var container = context.getCollection();
     var containerLink = container.getSelfLink();
@@ -33,6 +46,8 @@ function AddAccount(account) {
                 account_entry.id = account.id;
                 account_entry.accountName = account.accountName;
                 general_account.softAccountList.push(account_entry);
+
+                general_account.softAccountList.sort(SortOrder("accountName"));
 
                 var accept2 = container.replaceDocument(general_account._self, general_account,
                     function (err, itemReplaced) {

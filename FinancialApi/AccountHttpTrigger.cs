@@ -185,12 +185,17 @@ namespace Rodrap50.Financial.Api
 
             Document document = await client.CreateDocumentAsync("/dbs/Rodrap50/colls/Financials/", financialEvent);
 
+            
+
             StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
                                                                 "/dbs/Rodrap50/colls/Financials/sprocs/UpdateEventSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, financialEvent);
 
 
-            return new OkObjectResult(document);
+            StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<ListingsResponse>(
+                                                               "/dbs/Rodrap50/colls/Financials/sprocs/UpdateEventListing/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, financialEvent);
 
+
+            return new OkObjectResult(document);
 
         }
 
@@ -216,6 +221,8 @@ namespace Rodrap50.Financial.Api
             StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
                                                                 "/dbs/Rodrap50/colls/Financials/sprocs/UpdateEventSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, individualEvent);
 
+StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<ListingsResponse>(
+                                                               "/dbs/Rodrap50/colls/Financials/sprocs/UpdateEventListing/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, individualEvent);
 
             return new OkObjectResult(individualEvent);
         }
