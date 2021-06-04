@@ -1,0 +1,71 @@
+@typeparam TItem
+@using System.Reflection
+
+@if(memberInfo != null && memberInfo.Length > 0)
+{
+    <table class=@($"table {this.CSSClass}")>
+        <thead>
+            <tr>
+                @foreach (var member in memberInfo)
+                {
+                    @if(member.MemberType == MemberTypes.Property && !ColumnsToExcludeCSV.Contains(member.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        <th>
+                            @member.Name
+                        </th>
+                    }
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in this.Items)
+            {
+                <tr>@foreach (var member in memberInfo)
+                    {
+                        @if(member.MemberType == MemberTypes.Property && !ColumnsToExcludeCSV.Contains(member.Name, StringComparison.OrdinalIgnoreCase))
+                        {
+                            <td>
+                                @item.GetType().GetProperty(member.Name).GetValue(item)
+                            </td>
+                        }
+                    }
+                </tr>
+                
+            }
+        </tbody>
+    </table>
+}
+else{
+<h1>NoItemsInListErrror</h1>
+
+}
+
+@code{
+
+    MemberInfo[] memberInfo;
+
+    protected override void OnParametersSet(){
+        base.OnParametersSet();
+
+        if(Items != null && Items.Count > 0){
+
+            Type typeOfItem = this.Items[0].GetType();
+            memberInfo = typeOfItem.GetMembers();
+
+        }
+        else{
+
+            Console.WriteLine("Err: No Data");
+        }
+
+    }
+
+    [Parameter]
+    public IReadOnlyList<TItem> Items {get; set;}
+    [Parameter]
+    public string ColumnsToExcludeCSV {get; set;}
+
+    [Parameter]
+    public string CSSClass {get; set;}
+
+}

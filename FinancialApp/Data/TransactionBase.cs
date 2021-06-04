@@ -30,6 +30,10 @@ namespace FinancialApp.Data
         public string DigitalPaymentInfo {get; set;}
         [JsonProperty(PropertyName = "transactionMethod")]
         public TransactionType TransactionMethod {get; set;}
+        public string fromAccountName {get; set;}
+        public string toAccountName {get; set;}
+        public string genAccountName {get; set;}
+        public string eventName {get; set;}
 
         public void copy(TransactionBase obj){
             this.RecordId = obj.RecordId;
@@ -44,6 +48,10 @@ namespace FinancialApp.Data
             this.CheckNumber = obj.CheckNumber;
             this.DigitalPaymentInfo = obj.DigitalPaymentInfo;
             this.TransactionMethod = obj.TransactionMethod;
+            this.fromAccountName = obj.fromAccountName;
+            this.toAccountName = obj.toAccountName;
+            this.genAccountName = obj.genAccountName;
+            this.eventName = obj.eventName;
         }
     }
 

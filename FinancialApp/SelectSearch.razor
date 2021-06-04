@@ -1,0 +1,34 @@
+﻿@using System.Collections.Generic
+@using System.Collections
+
+
+<h3>SelectSearch</h3>
+<div class="form-group">
+    <label asp-for="selectsearchid" class="control-label">@SelectSearchLabel </label>
+    <input for="selectsearchid" list="selectsearchlist" class="form-control" placeholder="Select @SelectSearchLabel"
+        @onchange="@((args) => TestOut(args.Value.ToString()))" />
+
+    <datalist id="selectsearchlist">
+        @foreach (var eachitem in Items)
+        {
+            <option value="@eachitem.Key"> @eachitem.Value</option>
+        }
+    </datalist>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public string SelectSearchLabel {get; set;}
+
+    [Parameter]
+    public IEnumerable<KeyValuePair<string, string>> Items { get; set; }
+
+    void TestOut (string t){
+
+        Console.WriteLine(t);
+
+    }
+
+}

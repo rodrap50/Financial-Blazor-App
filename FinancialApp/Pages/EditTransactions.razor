@@ -34,112 +34,133 @@
 }
 else
 {
-<div class="row">
-    <div class="col-md-4">
-        <form>
-             <div class="form-group" >
-                
-                <label asp-for="generalAcccountId" class="control-label">General Account : @selectedGenAcct.AccountName</label>  
-                
-                @if(listing.GeneralAccountEntries.Length > 1 && listing.GeneralAccountEntries != null)
-                {
-                    <input for="generalAccountId" list="GenAccountSel" class="form-control" placeholder="Select General Account..." @onchange="@((args) => SetGeneralAccount(args.Value.ToString()))" />
-                    
-                    <datalist id="GenAccountSel">
-                        @foreach (var GenAccount  in listing.GeneralAccountEntries)
+    <div class="row">
+        <div class="col-md-4">
+            <form>
+                <div class="form-group">
+
+                    <label asp-for="generalAcccountId" class="control-label">General Account :
+                        @selectedGenAcct.AccountName</label>
+
+                    @if (listing.GeneralAccountEntries.Length > 1 && listing.GeneralAccountEntries != null)
+                    {
+                        <input for="generalAccountId" list="GenAccountSel" class="form-control"
+                    placeholder="Select General Account..."
+                    @onchange="@((args) => SetGeneralAccount(args.Value.ToString()))" />
+
+                        <datalist id="GenAccountSel">
+                            @foreach (var GenAccount in listing.GeneralAccountEntries)
+                            {
+                                <option value="@GenAccount.Id">@GenAccount.AccountName</option>
+                            }
+                        </datalist>
+
+                    }
+                    else
+                    {
+
+                        record.GeneralAccountId = listing.GeneralAccountEntries[0].Id;
+                        record.genAccountName = listing.GeneralAccountEntries[0].AccountName;
+                    }
+
+
+                </div>
+                <div class="form-group">
+                    <label asp-for="dateIncurred" class="control-label">Date Incurred</label>
+                    <input for="dateIncurred" class="form-control" type="date" @bind="@record.DateIncurred" />
+                </div>
+                <div class="form-group">
+
+                    <label asp-for="softAcccountId" class="control-label">Account Transaction : </label>
+
+                    <input for="softAccountId" list="softAccountSel" class="form-control" placeholder="Select Account..."
+                    @onchange="@((args) => SetSoftAccount(args.Value.ToString(), false))" />
+
+                    <datalist id="softAccountSel">
+                        @foreach (var SoftAccount in selectedGenAcct.SoftAccountList)
                         {
-                            <option value="@GenAccount.Id">@GenAccount.AccountName</option>
+                            <option value="@SoftAccount.Id">@SoftAccount.AccountName</option>
                         }
                     </datalist>
-                    
-                }
-                else
-                {
-                    selectedGenAcct = listing.GeneralAccountEntries[0];
-                }
-                
-                
-            </div>
-            <div class="form-group">
-                <label asp-for="dateIncurred" class="control-label">Date Incurred</label>
-                <input for="dateIncurred" class="form-control" type="date" @bind="@record.DateIncurred" />
-            </div>
-            <div class="form-group" >
-                
-                <label asp-for="softAcccountId" class="control-label">Account Transaction : </label>  
-                
-                <input for="softAccountId" list="softAccountSel" class="form-control" placeholder="Select Account..." @onchange="@((args) => SetSoftAccount(args.Value.ToString()))" />
-                    
-                    <datalist id="softAccountSel">
-                        @foreach (var SoftAccount  in selectedGenAcct.SoftAccountList)
-                        {
-                            <option value="@SoftAccount">@SoftAccount.AccountName</option>
-                        }
-                    </datalist>                 
-            </div>            
-            <div class="form-group">             
-                <label asp-for="direction" class="control-label">Direction: @record.Direction </label>
-                <EditForm Model="@record">
-                <InputRadioGroup @bind-Value="record.Direction" >
-                        @foreach (var item in Enum.GetValues(typeof(DebitCreditType)))
-                        {   
-                            <label for="@item" class="control-label">@item</label>
-                            <InputRadio Value="@item" class="custom-radio" id="@item" />
-                            
-                        }
-                    </InputRadioGroup>
-                </EditForm>
-            </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="eventSelID" class="control-label">Event: </label>
+                    <input for="eventSelID" list="eventSel" class="form-control" placeholder="Select Event..."
+                    @onchange="@((args) => record.EventId = args.Value.ToString())" />
 
-            
-            <div class="form-group">
-                <label asp-for="transactionMethod" class="control-label">Transaction Method</label>
-                
-                <label asp-for="direction" class="control-label">Direction: @record.TransactionMethod </label>
-                    <!-- Need to add a If transfer then select account to transfer too -->
+                    <datalist id="eventSel">
+                        @foreach (var evEnt in listing.EventEntries)
+                        {
+                            <option value="@evEnt.Id">@evEnt.EventName</option>
+                        }
+                    </datalist>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="direction" class="control-label">Direction: @record.Direction </label>
                     <EditForm Model="@record">
-                    <InputRadioGroup @bind-Value="record.TransactionMethod" >
-                            @foreach (var item in Enum.GetValues(typeof(TransactionType)))
-                            {   
+                        <InputRadioGroup @bind-Value="record.Direction">
+                            @foreach (var item in Enum.GetValues(typeof(DebitCreditType)))
+                            {
                                 <label for="@item" class="control-label">@item</label>
                                 <InputRadio Value="@item" class="custom-radio" id="@item" />
-                                
+
+                            }
+                        </InputRadioGroup>
+                    </EditForm>
+                </div>
+
+
+                <div class="form-group">
+                    <label asp-for="transactionMethod" class="control-label">Transaction Method</label>
+
+                    <label asp-for="direction" class="control-label">Direction: @record.TransactionMethod </label>
+                    <!-- Need to add a If transfer then select account to transfer too -->
+                <EditForm Model="@record">
+                        <InputRadioGroup @bind-Value="record.TransactionMethod">
+                            @foreach (var item in Enum.GetValues(typeof(TransactionType)))
+                            {
+                                <label for="@item" class="control-label">@item</label>
+                                <InputRadio Value="@item" class="custom-radio" id="@item" />
+
                             }
                         </InputRadioGroup>
                     </EditForm>
 
-            </div>
-            @if(record.TransactionMethod == (TransactionType)TransactionType.Transfer){
-                <div class="form-group" >
-                
-                <label asp-for="softAcccountId" class="control-label">Account to Tansfer To : </label>  
-                
-                <input for="softAccountId" list="softAccountSel" class="form-control" placeholder="Select Account..." @onchange="@((args) => SetSoftAccount(args.Value.ToString()))" />
-                    
-                    <datalist id="softAccountSel">
-                        @foreach (var SoftAccount  in selectedGenAcct.SoftAccountList)
-                        {
-                            <option value="@SoftAccount">@SoftAccount.AccountName</option>
-                        }
-                    </datalist>                 
                 </div>
+                @if (record.TransactionMethod == (TransactionType)TransactionType.Transfer)
+                {
+                    <div class="form-group">
 
-            }
-            <div class="form-group">
-                <label asp-for="amount" class="control-label">Amount</label>
-                <input type="number"for="amount" class="form-control" @bind="@record.Amount" placeholder="0.00"  />
-            </div>
-            <div class="form-group">
-                <label asp-for="description" class="control-label">Description</label>
-                <input for="description" class="form-control" @bind="@record.Description" />
-            </div>
-        </form>
-        
-        <button @onclick="@(async () => SaveTransaction())" class="btn btn-default">Save</button>
-        <button @onclick="@cancel" class="btn">Cancel</button>
-        
+                        <label asp-for="softAcccountId" class="control-label">Account to Tansfer To : </label>
+
+                        <input for="softAccountId" list="softAccountSel" class="form-control" placeholder="Select Account..."
+                    @onchange="@((args) => SetSoftAccount(args.Value.ToString(), true))" />
+
+                        <datalist id="softAccountSel">
+                            @foreach (var SoftAccount in selectedGenAcct.SoftAccountList)
+                            {
+                                <option value="@SoftAccount.Id">@SoftAccount.AccountName</option>
+                            }
+                        </datalist>
+                    </div>
+
+                }
+                <div class="form-group">
+                    <label asp-for="amount" class="control-label">Amount</label>
+                    <input type="number" for="amount" class="form-control" @bind="@record.Amount" placeholder="0.00" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="description" class="control-label">Description</label>
+                    <input for="description" class="form-control" @bind="@record.Description" />
+                </div>
+            </form>
+
+            <button @onclick="@(async () => SaveTransaction())" class="btn btn-default">Save</button>
+            <button @onclick="@cancel" class="btn">Cancel</button>
+
+        </div>
     </div>
-</div>
 }
 
 
@@ -147,13 +168,13 @@ else
 
 @code {
 
-    public Transaction record = new Transaction{ DateIncurred = DateTime.Today};
- 
+    public Transaction record = new Transaction { DateIncurred = DateTime.Today };
+
     public Entry submission = new Entry();
     int radioSelectCode = 1;
     private GeneralAccountEntry selectedGenAcct = new GeneralAccountEntry();
     private AccountEntry selectedSoftAcct = new AccountEntry();
-    public ListingsResponse listing =  new ListingsResponse();
+    public ListingsResponse listing = new ListingsResponse();
 
 
     protected override async Task OnInitializedAsync()
@@ -165,10 +186,10 @@ else
         selectedGenAcct = listing.GeneralAccountEntries[0];
 
     }
-    
+
     public async void ProcessClick()
     {
-        
+
         if (record.DateIncurred > DateTime.Today)
         {
             await JSRuntime.InvokeAsync<bool>("alert", "Cannot submit date in future");
@@ -178,19 +199,19 @@ else
         record.Amount = submission.Amount;
 
 
-        string output = "The following data has been submitted: \r\nDate: " + submission.SubmissionDate.Date.ToString("MM/dd/yyyy")
-                        + "\nName: " + submission.FirstName
-                        + "\nEvent: " + submission.Event
-                        + "\nAmount: " + record.Amount
-                        + "\nID:    " + record.Id;
+        string output = "The following data has been submitted: \r\nDate: " + record.DateIncurred.ToString("MM/dd/yyyy")
+        + "\nName: " + submission.FirstName
+        + "\nEvent: " + submission.Event
+        + "\nAmount: " + record.Amount
+        + "\nID: " + record.Id;
 
-        if(await JSRuntime.InvokeAsync<bool>("confirm", output))
-        {   
+        if (await JSRuntime.InvokeAsync<bool>("confirm", output))
+        {
             Console.WriteLine("adding");
             SaveTransaction();
         }
 
-    }   
+    }
 
     public void SaveTransaction()
     {
@@ -203,58 +224,46 @@ else
         //navigation.NavigateTo("/transactions");
     }
 
-    
-    public void SetGeneralAccount(String selectedID) 
+
+    public void SetGeneralAccount(String selectedID)
     {
-        
-        foreach(GeneralAccountEntry GenAccount  in listing.GeneralAccountEntries)
+
+        foreach (GeneralAccountEntry GenAccount in listing.GeneralAccountEntries)
         {
-            if(GenAccount.Id == selectedID)
+            if (GenAccount.Id == selectedID)
             {
                 selectedGenAcct = GenAccount;
-
+                record.GeneralAccountId = GenAccount.Id;
             }
         }
-               
+
+
 
     }
-
-       public void SetDirection (int d)
-    { 
-        /* 
-        switch(d)
-        {
-            case 1:
-                record.Direction = [EnumMember(Value="debit")] Debit,;
-                break;
-            case 2:
-                record.Direction = "Debit";
-                [EnumMember(Value="credit")]
-        Credit
-                break;
-            case 3:
-                record.Direction = "Transfer";
-                break;
-       
-
-        }
-         */
-    }
-
-    public void SetSoftAccount(String selectedID) 
+    public void SetSoftAccount(String selectedID, bool trans)
     {
-        
-        foreach(AccountEntry softAccount  in selectedGenAcct.SoftAccountList)
+
+        foreach (AccountEntry softAccount in selectedGenAcct.SoftAccountList)
         {
-            if(softAccount.Id == selectedID)
+            if (softAccount.Id == selectedID)
             {
                 selectedSoftAcct = softAccount;
 
             }
         }
-               
+
+        if (trans)
+        {
+            record.FromAccountId = selectedSoftAcct.Id;
+
+        }
+        else
+        {
+            record.ToAccountId = selectedSoftAcct.Id;
+        }
+
 
     }
 
-    
+
 }
