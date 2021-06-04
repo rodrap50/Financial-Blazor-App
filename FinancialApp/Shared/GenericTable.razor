@@ -63,9 +63,9 @@ else{
     [Parameter]
     public IReadOnlyList<TItem> Items {get; set;}
     [Parameter]
-    public string ColumnsToExcludeCSV {get; set;}
+    public string ColumnsToExcludeCSV {get; set;} = "";
 
     [Parameter]
-    public string CSSClass {get; set;}
+    public string CSSClass {get; set;} 
 
 }
