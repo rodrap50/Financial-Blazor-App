@@ -30,7 +30,10 @@
 
 @if (listing.GeneralAccountEntries == null)
 {
-    <p><em>Loading...</em></p>
+    <div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+
 }
 else
 {
@@ -46,12 +49,12 @@ else
                     {
                         <input for="generalAccountId" list="GenAccountSel" class="form-control"
                     placeholder="Select General Account..."
-                    @onchange="@((args) => SetGeneralAccount(args.Value.ToString()))" />
+                    @onchange="@((args) => SetGeneralAccount(args.data-Value.ToString()))" />
 
                         <datalist id="GenAccountSel">
                             @foreach (var GenAccount in listing.GeneralAccountEntries)
                             {
-                                <option value="@GenAccount.Id">@GenAccount.AccountName</option>
+                                <option data-value="@GenAccount.Id">@GenAccount.AccountName</option>
                             }
                         </datalist>
 
@@ -79,7 +82,7 @@ else
                     <datalist id="softAccountSel">
                         @foreach (var SoftAccount in selectedGenAcct.SoftAccountList)
                         {
-                            <option value="@SoftAccount.Id">@SoftAccount.AccountName</option>
+                            <option data-value="@SoftAccount.Id">@SoftAccount.AccountName</option>
                         }
                     </datalist>
                 </div>

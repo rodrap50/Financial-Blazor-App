@@ -10,7 +10,9 @@
 
 @if (listing.GeneralAccountEntries == null)
 {
-    <p><em>Loading...</em></p>
+    <div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
 }
 else
 {
@@ -28,7 +30,7 @@ else
     </EditForm>
       -->
     Console.WriteLine(selectedGenAcct.AccountName);
-    <GenericTable Items="softaccountListing" CSSClass="is-striped"></GenericTable>
+    <GenericTable Items="softaccountListing" CSSClass="table-striped"></GenericTable>
 
 
 
