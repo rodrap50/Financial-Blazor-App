@@ -1,0 +1,57 @@
+﻿@using System.Collections.Generic
+@using System.Collections
+@inject IJSRuntime JSRuntime
+@using FinancialApp.Data
+
+
+<h3>SelectSearch</h3>
+<div class="form-group">
+    <label asp-for="selectsearchid" class="control-label">@SelectSearchLabel </label>
+
+    <select class="searchselect" @bind="SelectedItemKey" @oninput="SelectionChange">
+        @foreach (var eachitem in Items)
+        {
+            <option value="@eachitem.GetId()"> @eachitem.GetName()</option>
+        }
+    </select>
+    
+    
+
+    <code>Selected Value</code>: @SelectedItemKey
+</div>
+
+
+
+@code {
+
+  
+
+    [Parameter]
+    public string SelectSearchLabel {get; set;}
+
+    [Parameter]
+    public IIDEntry[] Items { get; set; }
+    
+    [Parameter]
+    public EventCallback<string> SelectedItemKeyChanged { get; set; } 
+    [Parameter]    
+    public string SelectedItemKey {get; set;}
+   
+
+    void TestOut (string t){
+
+        Console.WriteLine(t);
+
+    }
+   // protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+       // await JSRuntime.InvokeVoidAsync("renderjQueryComponents");
+        //await base.OnAfterRenderAsync(firstRender);
+    //}
+
+    private async Task SelectionChange(){
+
+        await SelectedItemKeyChanged.InvokeAsync(SelectedItemKey);
+    }
+
+}

@@ -17,62 +17,42 @@
 else
 {
     <h3>TEST TEST TEST</h3>
-    <SelectSearch SelectSearchLabel="TestComponent" Items=@DictTest />
-
-    <!--
-    <EditForm Model="DictTest">
-        <InputSelect @bind-Value="DictTest">
-            <option value="17">Spring</option>
-            <option>Summer</option>
-            <option>Autumn</option>
-            <option>Winter</option>
-        </InputSelect>
-    </EditForm>
-      -->
-    Console.WriteLine(selectedGenAcct.AccountName);
-    <GenericTable Items="softaccountListing" CSSClass="table-striped"></GenericTable>
-
+    <SelectSearch SelectSearchLabel="TestComponent" Items=@softaccountListing @bind-SelectedItemKey="record.FromAccountId"></SelectSearch>
+    
+    
+    <label asp-for="description" class="control-label">Boud: @record.FromAccountId</label>
 
 
 }
 
 @code{
 
-    public Dictionary<string, string>
-    DictTest = new Dictionary<string, string>
-        ();
+    public Dictionary<string, string> DictTest = new Dictionary<string, string> ();
+    public Dictionary<string, string> DictSelect = new Dictionary<string, string> ();
 
-        private GeneralAccountEntry selectedGenAcct = new GeneralAccountEntry();
-        private AccountEntry selectedSoftAcct = new AccountEntry();
-        public ListingsResponse listing = new ListingsResponse();
-        public AccountEntry[] softaccountListing;
+    private GeneralAccountEntry selectedGenAcct = new GeneralAccountEntry();
+    private AccountEntry selectedSoftAcct = new AccountEntry();
+    public ListingsResponse listing = new ListingsResponse();
+    public AccountEntry[] softaccountListing;
+    public Transaction record = new Transaction();
+    MemberInfo[] memberInfo;
 
-        MemberInfo[] memberInfo;
-
-        protected override async Task OnInitializedAsync()
-        {
+    protected override async Task OnInitializedAsync()
+    {
 
         HttpResponseMessage response = await Http.GetAsync("http://localhost:7071/api/listings");
         string responseBody = await response.Content.ReadAsStringAsync();
-        listing = JsonConvert.DeserializeObject<ListingsResponse>
-            (responseBody);
+        listing = JsonConvert.DeserializeObject<ListingsResponse>(responseBody);
 
-            selectedGenAcct = listing.GeneralAccountEntries[0];
-            softaccountListing = selectedGenAcct.SoftAccountList;
+        selectedGenAcct = listing.GeneralAccountEntries[0];
+        softaccountListing = selectedGenAcct.SoftAccountList;
 
-            DictTest.Add("testk1", "testV1");
-            DictTest.Add("testk2", "testV2");
-            DictTest.Add("testk3", "testV3");
+        DictTest.Add("testk1", "testV1");
+        DictTest.Add("testk2", "testV2");
+        DictTest.Add("testk3", "testV3");
 
-            }
+    }
 
-            public void  test(){
+    
 
-            Type typeOfItem = softaccountListing[0].GetType();
-            memberInfo = typeOfItem.GetMembers();
-
-            Console.WriteLine(memberInfo[0]);
-
-            }
-
-            }
+}

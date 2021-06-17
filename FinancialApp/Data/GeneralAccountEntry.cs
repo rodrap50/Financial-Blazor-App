@@ -1,5 +1,6 @@
 using System;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace FinancialApp.Data
 {
@@ -7,6 +8,8 @@ namespace FinancialApp.Data
     {
         [JsonProperty(PropertyName = "softAccountList")]
         public AccountEntry[] SoftAccountList { get; set; }
+
+        
 
     }
 }

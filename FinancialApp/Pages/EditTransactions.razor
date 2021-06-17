@@ -49,7 +49,7 @@ else
                     {
                         <input for="generalAccountId" list="GenAccountSel" class="form-control"
                     placeholder="Select General Account..."
-                    @onchange="@((args) => SetGeneralAccount(args.data-Value.ToString()))" />
+                    @onchange="@((args) => SetGeneralAccount(args.Value.ToString()))" />
 
                         <datalist id="GenAccountSel">
                             @foreach (var GenAccount in listing.GeneralAccountEntries)
