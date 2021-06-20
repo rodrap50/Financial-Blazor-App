@@ -1,5 +1,4 @@
 @page "/TestComponent"
-@inject IJSRuntime JSRuntime
 @using System.Net.Http.Json
 @using FinancialApp.Data
 @using Newtonsoft.Json
@@ -17,18 +16,16 @@
 else
 {
     <h3>TEST TEST TEST</h3>
-    <SelectSearch SelectSearchLabel="TestComponent" Items=@softaccountListing @bind-SelectedItemKey="record.FromAccountId"></SelectSearch>
+    <SelectSearch SelectSearchLabel="TestComponent" Items=@softaccountListing @bind-SelectedItemKey="record.fromAccountName"></SelectSearch>
     
     
-    <label asp-for="description" class="control-label">Boud: @record.FromAccountId</label>
+    <label class="control-label">Boud: @record.fromAccountName</label>
 
 
 }
 
 @code{
 
-    public Dictionary<string, string> DictTest = new Dictionary<string, string> ();
-    public Dictionary<string, string> DictSelect = new Dictionary<string, string> ();
 
     private GeneralAccountEntry selectedGenAcct = new GeneralAccountEntry();
     private AccountEntry selectedSoftAcct = new AccountEntry();
@@ -47,12 +44,9 @@ else
         selectedGenAcct = listing.GeneralAccountEntries[0];
         softaccountListing = selectedGenAcct.SoftAccountList;
 
-        DictTest.Add("testk1", "testV1");
-        DictTest.Add("testk2", "testV2");
-        DictTest.Add("testk3", "testV3");
+
 
     }
-
-    
+  
 
 }

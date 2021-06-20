@@ -4,20 +4,22 @@
 @using FinancialApp.Data
 
 
+
 <h3>SelectSearch</h3>
 <div class="form-group">
     <label asp-for="selectsearchid" class="control-label">@SelectSearchLabel </label>
-
-    <select class="searchselect" @bind="SelectedItemKey" @oninput="SelectionChange">
-        @foreach (var eachitem in Items)
-        {
-            <option value="@eachitem.GetId()"> @eachitem.GetName()</option>
-        }
-    </select>
+    
+        <select class="form-control" @bind-value="SelectedItemKey" @onchange="SelectionChange" @bind-value:event="oninput">
+            <option value="">--Please Select--</option>
+            @foreach (var eachitem in Items)
+            {
+                <option value="@eachitem.GetName()"> @eachitem.GetName()</option>
+            }
+        </select>
     
     
 
-    <code>Selected Value</code>: @SelectedItemKey
+    <Label>Selected Value: @SelectedItemKey</Label>
 </div>
 
 
@@ -43,15 +45,15 @@
         Console.WriteLine(t);
 
     }
-   // protected override async Task OnAfterRenderAsync(bool firstRender)
-    //{
-       // await JSRuntime.InvokeVoidAsync("renderjQueryComponents");
-        //await base.OnAfterRenderAsync(firstRender);
-    //}
-
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JSRuntime.InvokeVoidAsync("renderjQueryComponents");
+        await base.OnAfterRenderAsync(firstRender);
+    }
     private async Task SelectionChange(){
 
         await SelectedItemKeyChanged.InvokeAsync(SelectedItemKey);
     }
-
+    
+   
 }
