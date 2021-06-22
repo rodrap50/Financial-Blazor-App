@@ -1,0 +1,43 @@
+@using System.Collections.Generic
+@using System.Collections
+@inject IJSRuntime JSRuntime
+@using FinancialApp.Data
+
+<div class="form-group">
+    <label class="form-control" for="selectGroup">@Label</label>
+        <div id="selectGroup" class="list-group">
+            @foreach (var item in List)
+            {   
+                if(item == SelectedValue){
+                    <button type="button" class="@CSSActive" @onclick="@(async () => await OnClick(@item))">@item</button>
+                }
+                else{
+                    <button type="button" class="@CSS" @onclick="@(async () => await OnClick(@item))">@item</button>
+                }
+            }
+        </div>
+
+</div>
+
+@code{
+
+    [Parameter]public string Label {get; set;}
+
+    [Parameter]public string[] List {get; set;}
+    public EventCallback<string> SelectedValueChanged {get; set;}
+    public string SelectedValue {get; set;}
+    private string CSSActive {get; set;} = "list-group-item list-group-item-action active";
+    private string CSS {get; set;} ="list-group-item list-group-item-action ";
+    
+    
+
+    public async Task OnClick(string selected){
+
+        SelectedValue = selected;
+
+        await SelectedValueChanged.InvokeAsync(SelectedValue);
+
+    }
+
+
+}

@@ -21,6 +21,8 @@ else
     
     <label class="control-label">Boud: @record.fromAccountName</label>
 
+    <GroupSelection Label="Test Group" List="Enum.GetValues(typeof(TransactionType)).select(0=> o.ToSting()).ToArray())" @bind-Value="@record.TransactionMethod"></GroupSelection>
+
 
 }
 
