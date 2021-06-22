@@ -54,7 +54,7 @@ else
                         <datalist id="GenAccountSel">
                             @foreach (var GenAccount in listing.GeneralAccountEntries)
                             {
-                                <option data-value="@GenAccount.Id">@GenAccount.AccountName</option>
+                                <option value="@GenAccount.Id">@GenAccount.AccountName</option>
                             }
                         </datalist>
 
@@ -82,7 +82,7 @@ else
                     <datalist id="softAccountSel">
                         @foreach (var SoftAccount in selectedGenAcct.SoftAccountList)
                         {
-                            <option data-value="@SoftAccount.Id">@SoftAccount.AccountName</option>
+                            <option value="@SoftAccount.Id">@SoftAccount.AccountName</option>
                         }
                     </datalist>
                 </div>
@@ -113,24 +113,53 @@ else
                     </EditForm>
                 </div>
 
-
+                <!--
                 <div class="form-group">
-                    <label asp-for="transactionMethod" class="control-label">Transaction Method</label>
+                    <label asp-for="transactionMethod" class="control-label">Transaction Method: @record.TransactionMethod</label>
 
-                    <label asp-for="direction" class="control-label">Direction: @record.TransactionMethod </label>
-                    <!-- Need to add a If transfer then select account to transfer too -->
-                <EditForm Model="@record">
-                        <InputRadioGroup @bind-Value="record.TransactionMethod">
-                            @foreach (var item in Enum.GetValues(typeof(TransactionType)))
-                            {
-                                <label for="@item" class="control-label">@item</label>
-                                <InputRadio Value="@item" class="custom-radio" id="@item" />
+                    <div class="list-group">
+                        
+                        <EditForm Model="@record">
+                            <InputRadioGroup @bind-Value="record.TransactionMethod" id="transactionMethod" >
+                                @foreach (var item in Enum.GetValues(typeof(TransactionType)))
+                                {
+                                    <div class="form-check">
+                                    
+                                        
+                                        <InputRadio Value="@item" id="@item" class="form-check-input" visable="false"/>
+                                        
+                                        <label for="@item" class="list-group-item">@item
+                                        
+                                    </label>
+                                    </div>
 
-                            }
-                        </InputRadioGroup>
-                    </EditForm>
+                                }
+                            </InputRadioGroup>
+                        </EditForm>
+                    </div>
 
                 </div>
+                -->
+                <!--
+                <div class="form-group">
+                    <label asp-for="transactionMethod" class="control-label">Transaction Method: @record.TransactionMethod</label>
+                    <div class="list-group">
+                        
+                            @foreach (var item in Enum.GetValues(typeof(TransactionType)))
+                            {   <div class="list-group-item">
+                                <div class="form-check">
+                                    
+                                        <input type="radio" @bind="@record.TransactionMethod" id="@item" class="form-check-input" />                        
+                                        <label for="@item" class="form-check-label">@item</label>
+                                    </div>
+                                </div>
+                            }
+                        
+                    </div>
+                </div>
+                -->
+
+
                 @if (record.TransactionMethod == (TransactionType)TransactionType.Transfer)
                 {
                     <div class="form-group">

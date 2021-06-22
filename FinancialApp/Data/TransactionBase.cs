@@ -74,4 +74,9 @@ namespace FinancialApp.Data
         [EnumMember(Value="credit")]
         Credit
     }
+
+    public TransactionType GetTransactionType(){
+
+        return transactionMethod;
+    }
 }
