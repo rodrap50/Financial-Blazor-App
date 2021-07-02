@@ -5,21 +5,17 @@
 
 
 
-<h3>SelectSearch</h3>
+
 <div class="form-group">
     <label asp-for="selectsearchid" class="control-label">@SelectSearchLabel </label>
     
-        <select class="form-control" @bind-value="SelectedItemKey" @onchange="SelectionChange" @bind-value:event="oninput">
+        <select class="custom-select" @bind-value="SelectedItemKey" @onchange="SelectionChange" @bind-value:event="oninput" for="selectsearchid">
             <option value="">--Please Select--</option>
             @foreach (var eachitem in Items)
             {
                 <option value="@eachitem.GetName()"> @eachitem.GetName()</option>
             }
-        </select>
-    
-    
-
-    <Label>Selected Value: @SelectedItemKey</Label>
+        </select>   
 </div>
 
 
@@ -38,6 +34,7 @@
     public EventCallback<string> SelectedItemKeyChanged { get; set; } 
     [Parameter]    
     public string SelectedItemKey {get; set;}
+    
    
 
     void TestOut (string t){
@@ -50,6 +47,7 @@
         await JSRuntime.InvokeVoidAsync("renderjQueryComponents");
         await base.OnAfterRenderAsync(firstRender);
     }
+
     private async Task SelectionChange(){
 
         await SelectedItemKeyChanged.InvokeAsync(SelectedItemKey);

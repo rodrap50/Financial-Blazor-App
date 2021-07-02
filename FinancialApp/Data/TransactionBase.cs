@@ -5,37 +5,39 @@ using System.Runtime.Serialization;
 
 namespace FinancialApp.Data
 {
-    public class TransactionBase {
-       [JsonProperty(PropertyName = "recordId")]
-        public string RecordId {get; set;}
+    public class TransactionBase
+    {
+        [JsonProperty(PropertyName = "recordId")]
+        public string RecordId { get; set; }
         [JsonProperty(PropertyName = "fromAccountId")]
-        public string FromAccountId {get; set;}
+        public string FromAccountId { get; set; }
         [JsonProperty(PropertyName = "toAccountId")]
-        public string ToAccountId {get; set;}
+        public string ToAccountId { get; set; }
         [JsonProperty(PropertyName = "eventId")]
-        public string EventId {get; set;}
-        [JsonProperty(PropertyName="generalAccountId")]
-        public string GeneralAccountId {get; set;}
+        public string EventId { get; set; }
+        [JsonProperty(PropertyName = "generalAccountId")]
+        public string GeneralAccountId { get; set; }
         [JsonProperty(PropertyName = "dateIncurred")]
-        public DateTime DateIncurred {get; set; }
+        public DateTime DateIncurred { get; set; }
         [JsonProperty(PropertyName = "description")]
-        public string Description {get; set;}
-        [JsonProperty(PropertyName="direction")]
-        public DebitCreditType Direction {get; set;}
+        public string Description { get; set; }
+        [JsonProperty(PropertyName = "direction")]
+        public DebitCreditType Direction { get; set; }
         [JsonProperty(PropertyName = "amount")]
-        public decimal Amount {get; set;}
+        public decimal Amount { get; set; }
         [JsonProperty(PropertyName = "checkNumber")]
-        public string CheckNumber {get; set;}
+        public string CheckNumber { get; set; }
         [JsonProperty(PropertyName = "digitalPaymentInfo")]
-        public string DigitalPaymentInfo {get; set;}
+        public string DigitalPaymentInfo { get; set; }
         [JsonProperty(PropertyName = "transactionMethod")]
-        public TransactionType TransactionMethod {get; set;}
-        public string fromAccountName {get; set;}
-        public string toAccountName {get; set;}
-        public string genAccountName {get; set;}
-        public string eventName {get; set;}
+        public TransactionType TransactionMethod { get; set; }
+        public string fromAccountName { get; set; }
+        public string toAccountName { get; set; }
+        public string genAccountName { get; set; }
+        public string eventName { get; set; }
 
-        public void copy(TransactionBase obj){
+        public void copy(TransactionBase obj)
+        {
             this.RecordId = obj.RecordId;
             this.FromAccountId = obj.FromAccountId;
             this.ToAccountId = obj.ToAccountId;
@@ -55,28 +57,34 @@ namespace FinancialApp.Data
         }
     }
 
-[JsonConverter(typeof(StringEnumConverter))]
-     public enum TransactionType {
-            [EnumMember(Value = "check")]
-            Check,
-            [EnumMember(Value = "cash")]
-            Cash,
-            [EnumMember(Value = "transfer")]
-            Transfer,
-            [EnumMember(Value = "digital-payment")]
-            DigitalPayment
-        }
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum TransactionType
+    {
+        [EnumMember(Value = "check")]
+        Check,
+        [EnumMember(Value = "cash")]
+        Cash,
+        [EnumMember(Value = "transfer")]
+        Transfer,
+        [EnumMember(Value = "digital-payment")]
+        DigitalPayment
+    }
 
-[JsonConverter(typeof(StringEnumConverter))]
-    public enum DebitCreditType {
-        [EnumMember(Value="debit")]
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum DebitCreditType
+    {
+        [EnumMember(Value = "debit")]
         Debit,
-        [EnumMember(Value="credit")]
+        [EnumMember(Value = "credit")]
         Credit
     }
 
-    public TransactionType GetTransactionType(){
-
-        return transactionMethod;
+    public class TransactionTypeFactory
+    {
+        public static string[] getTransactionTypes()
+        {
+            return Enum.GetNames<TransactionType>();
+        }
     }
+
 }

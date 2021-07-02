@@ -1,5 +1,6 @@
 @using System.Collections.Generic
 @using System.Collections
+@using System.Runtime.Serialization
 @inject IJSRuntime JSRuntime
 @using FinancialApp.Data
 
@@ -9,7 +10,7 @@
             @foreach (var item in List)
             {   
                 if(item == SelectedValue){
-                    <button type="button" class="@CSSActive" @onclick="@(async () => await OnClick(@item))">@item</button>
+                    <button type="button" class="@($"{this.CSS} active")" @onclick="@(async () => await OnClick(@item))">@item</button>
                 }
                 else{
                     <button type="button" class="@CSS" @onclick="@(async () => await OnClick(@item))">@item</button>
@@ -23,11 +24,13 @@
 
     [Parameter]public string Label {get; set;}
 
-    [Parameter]public string[] List {get; set;}
+    [Parameter]public string List  {get; set;}
+
+    [Parameter] public TransactionType SelectedValue {get; set;}
+
     public EventCallback<string> SelectedValueChanged {get; set;}
-    public string SelectedValue {get; set;}
-    private string CSSActive {get; set;} = "list-group-item list-group-item-action active";
-    private string CSS {get; set;} ="list-group-item list-group-item-action ";
+   
+    private const string CSS ="list-group-item list-group-item-action";
     
     
 

@@ -20,9 +20,7 @@ else
     
     
     <label class="control-label">Boud: @record.fromAccountName</label>
-
-    <GroupSelection Label="Test Group" List="Enum.GetValues(typeof(TransactionType)).select(0=> o.ToSting()).ToArray())" @bind-Value="@record.TransactionMethod"></GroupSelection>
-
+   
 
 }
 
@@ -34,7 +32,9 @@ else
     public ListingsResponse listing = new ListingsResponse();
     public AccountEntry[] softaccountListing;
     public Transaction record = new Transaction();
-    MemberInfo[] memberInfo;
+    MemberInfo[] memberInfo;    
+
+    private string[] Transmethod = Enum.GetValues(typeof(TransactionType)).Cast<int>().Select(x => x.ToString()).ToArray();
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,8 +46,7 @@ else
         selectedGenAcct = listing.GeneralAccountEntries[0];
         softaccountListing = selectedGenAcct.SoftAccountList;
 
-
-
+        
     }
   
 
