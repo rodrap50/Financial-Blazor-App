@@ -88,7 +88,7 @@ namespace Rodrap50.Financial.Api
             account = sprocResponse.Response;
 
             StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
-                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, account);
+                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, new Account[]{account});
 
             Account generalAccount = null;
 
@@ -142,7 +142,7 @@ namespace Rodrap50.Financial.Api
 
 
             StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
-                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, account);
+                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, new Account[]{account});
 
             Account generalAccount = null;
 
@@ -268,7 +268,10 @@ StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteS
             StoredProcedureResponse<AccountResponse[]> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountResponse[]>(
                                                                 "/dbs/Rodrap50/colls/Financials/sprocs/AddAccountTransaction/", new RequestOptions { PartitionKey = new PartitionKey("account") }, transaction);
 
+            StoredProcedureResponse<AccountsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
+                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, sprocResponse2.Response);
 
+            
             return new OkObjectResult(document);
 
 

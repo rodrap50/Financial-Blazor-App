@@ -6,7 +6,7 @@ function UpdateAccountSummary(accountEntries) {
 
     var accounts = {};
 
-    if (!accountEntries || !Array.isArray(accountEntries) || accountEntries.length == 0) throw new Error("[ERR-AR1004] At least one account is not defined.");
+    if (accountEntries.length == 0) throw new Error("[ERR-AR1004] At least one account is not defined.");
 
     // Query for the Account Summary Document
     var filterQuery =
