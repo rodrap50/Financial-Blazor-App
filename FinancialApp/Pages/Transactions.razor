@@ -1,0 +1,30 @@
+@page "/Transactions"
+@inject IJSRuntime JSRuntime
+@using System.Net.Http.Json
+@using FinancialApp.Data
+@using Newtonsoft.Json
+@inject HttpClient Http
+@inject Microsoft.AspNetCore.Components.NavigationManager navigation
+@inject NavigationManager NavigationManager
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h3>Transactions</h3>
+        </div>
+        <div class="col">
+            <button type="button" class="btn btn-primary" @onclick="@(async () =>NavToTran())">New Transaction</button>
+        </div>
+    </div>
+</div>
+@code{
+
+    
+
+    public void NavToTran(){
+
+        navigation.NavigateTo("/EditTransactions");
+    }
+
+
+}
