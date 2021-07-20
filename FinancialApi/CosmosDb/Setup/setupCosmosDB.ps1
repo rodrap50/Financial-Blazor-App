@@ -4,12 +4,12 @@ If($PSVersionTable.PSVersion.Major -lt 7){
     exit 0xA
 }
 
-$module = Get-Module -Name CosmoDB -ListAvailable
-
-If($null -eq $module){
-
-    Install-Module -Name CosmosDB -Scope CurrentUser -Force
-}
+#$module = Get-Module -Name CosmoDB -ListAvailable
+#
+#If($null -eq $module){
+#
+#    Install-Module -Name CosmosDB -Scope CurrentUser -Force
+#}
 
 $cosmosDbContext = New-CosmosDbContext -Emulator 
 $databaseId = $args[0]

@@ -1,4 +1,4 @@
-function UpdateEventListing(eventRecord) {
+function UpdateEventListing(eventRecord) {
 
     function SortOrder(prop) {    
         return function(a, b) {    

@@ -1,4 +1,4 @@
-function UpdateAccountListing(account) {
+function UpdateAccountListing(account) {
 
     function SortOrder(prop) {    
         return function(a, b) {    

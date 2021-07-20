@@ -1,4 +1,4 @@
-function UpdateAccountDetails(account) {
+function UpdateAccountDetails(account) {
     var context = getContext();
     var container = context.getCollection();
     var containerLink = container.getSelfLink();
