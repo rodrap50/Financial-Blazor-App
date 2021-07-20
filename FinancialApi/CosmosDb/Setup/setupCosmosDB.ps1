@@ -4,10 +4,10 @@ If($PSVersionTable.PSVersion.Major -lt 7){
     exit 0xA
 }
 
-$module = Get-Module -Name CosmoDB -ListAvailable
+$module = Get-Module -ListAvailable| Where {$_.name -like "CosmosDB"}
 
 If($null -eq $module){
-
+    Write-Output "Installing CosmosDB Module"
     Install-Module -Name CosmosDB -Scope CurrentUser -Force
 }
 
