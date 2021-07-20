@@ -1,4 +1,4 @@
-function ReserveNextTransaction(accountid) {
+function ReserveNextTransaction(accountid) {
     var context = getContext();
     var container = context.getCollection();
     var containerLink = container.getSelfLink();

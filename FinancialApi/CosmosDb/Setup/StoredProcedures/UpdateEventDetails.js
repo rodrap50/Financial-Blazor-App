@@ -1,4 +1,4 @@
-function UpdateEventDetails(financial_event) {
+function UpdateEventDetails(financial_event) {
     var context = getContext();
     var container = context.getCollection();
     var containerLink = container.getSelfLink();

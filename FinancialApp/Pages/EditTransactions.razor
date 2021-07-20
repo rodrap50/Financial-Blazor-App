@@ -50,10 +50,12 @@
 
 
                     </div>
+
                     <div class="form-group">
                         <label asp-for="dateIncurred" class="control-label">Date Incurred</label>
                         <input for="dateIncurred" class="form-control" type="date" @bind="@record.DateIncurred" />
                     </div>
+
                     <div class="form-group">
 
                         <label asp-for="softAcccountId" class="control-label">Account Transaction : </label>
@@ -69,6 +71,7 @@
                             }
                         </datalist>
                     </div>
+
                     <div class="form-group">
                         <SelectSearch SelectSearchLabel="Event" Items="@eventEntries"
                         @bind-SelectedItemKey="record.EventId">
@@ -193,9 +196,6 @@
             await JSRuntime.InvokeAsync<bool>("alert", "Cannot submit date in future");
             return;
         }
-
-
-
 
         string output = "The following data has been submitted: \r\nDate: " + record.DateIncurred.ToString("MM/dd/yyyy")
         + "\nName: " + submission.FirstName

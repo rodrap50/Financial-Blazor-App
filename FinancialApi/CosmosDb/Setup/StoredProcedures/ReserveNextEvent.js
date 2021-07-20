@@ -1,4 +1,4 @@
-function ReserveNextEvent() {
+function ReserveNextEvent() {
     var context = getContext();
     var container = context.getCollection();
     var containerLink = container.getSelfLink();

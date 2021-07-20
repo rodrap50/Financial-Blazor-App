@@ -1,4 +1,4 @@
-function ReserveNextAccount() {
+function ReserveNextAccount() {
     var context = getContext();
     var container = context.getCollection();
     var containerLink = container.getSelfLink();
