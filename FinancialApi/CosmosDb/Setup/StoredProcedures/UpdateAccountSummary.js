@@ -1,12 +1,12 @@
-function UpdateAccountSummary(accountEntries) {
+function UpdateAccountSummary(accountsRequest) {
     var context = getContext();
     var container = context.getCollection();
     var containerLink = container.getSelfLink();
     var response = context.getResponse();
 
     var accounts = {};
-
-    if (accountEntries.length == 0) throw new Error("[ERR-AR1004] At least one account is not defined.");
+    var requestEntries = accountsRequest.accounts;
+    if (requestEntries.length == 0) throw new Error("[ERR-AR1004] At least one account is not defined.");
 
     // Query for the Account Summary Document
     var filterQuery =
@@ -25,27 +25,27 @@ function UpdateAccountSummary(accountEntries) {
             if (!accounts) throw new Error("[ERR-AR1010] Account summary document not found.");
 
             // Loop through each input accounts and each account in the account summary
-            var inputLength = accountEntries.length;
+            var inputLength = requestEntries.length;
             for (var i = 0; i < inputLength; i++) {
 
 
                 var accountMatch = false;
 
                 accounts.accountSummaries.forEach(function (item, index, obj) {
-                    if (item.id == accountEntries[i].id) {
-                        item.accountName = accountEntries[i].accountName;
-                        item.balance = accountEntries[i].balance;
+                    if (item.id == requestEntries[i].id) {
+                        item.accountName = requestEntries[i].accountName;
+                        item.balance = requestEntries[i].balance;
                         accountMatch = true;
                     }
                 });
                 if (!accountMatch) {
                     // Add new account summary
                     var baseAccount = {};
-                    baseAccount.id = accountEntries[i].id;
-                    baseAccount.recordId = accountEntries[i].recordId;
-                    baseAccount.accountName = accountEntries[i].accountName;
-                    baseAccount.softAccount = accountEntries[i].softAccount;
-                    baseAccount.balance = accountEntries[i].balance;
+                    baseAccount.id = requestEntries[i].id;
+                    baseAccount.recordId = requestEntries[i].recordId;
+                    baseAccount.accountName = requestEntries[i].accountName;
+                    baseAccount.softAccount = requestEntries[i].softAccount;
+                    baseAccount.balance = requestEntries[i].balance;
                     accounts.accountSummaries.push(baseAccount);
                 }
 

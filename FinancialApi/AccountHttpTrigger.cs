@@ -1,6 +1,4 @@
-using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -14,6 +12,7 @@ using Rodrap50.Financial.Api.Models;
 using Rodrap50.Financial.Api.Data;
 using Rodrap50.Financial.Api.Data.Base;
 using Rodrap50.Financial.Api.Data.Responses;
+using Rodrap50.Financial.Api.Data.Requests;
 
 namespace Rodrap50.Financial.Api
 {
@@ -87,8 +86,11 @@ namespace Rodrap50.Financial.Api
 
             account = sprocResponse.Response;
 
+            AccountsRequest summaryRequest = new AccountsRequest();
+            summaryRequest.accounts = new Account[]{account};
+
             StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
-                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, new Account[]{account});
+                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, summaryRequest);
 
             Account generalAccount = null;
 
@@ -140,10 +142,11 @@ namespace Rodrap50.Financial.Api
 
             StoredProcedureResponse<AccountResponse> sprocResponse1 = await client.ExecuteStoredProcedureAsync<AccountResponse>("/dbs/Rodrap50/colls/Financials/sprocs/AddAccount/", new RequestOptions { PartitionKey = new PartitionKey("account") }, account);
 
-            Account[] updateSummaryAccounts = new Account[]{account};
+            AccountsRequest summaryRequest = new AccountsRequest();
+            summaryRequest.accounts = new Account[]{account};
 
             StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
-                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") },updateSummaryAccounts);
+                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") },summaryRequest);
 
             Account generalAccount = null;
 
@@ -269,8 +272,11 @@ StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteS
             StoredProcedureResponse<AccountResponse[]> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountResponse[]>(
                                                                 "/dbs/Rodrap50/colls/Financials/sprocs/AddAccountTransaction/", new RequestOptions { PartitionKey = new PartitionKey("account") }, transaction);
 
+            AccountsRequest summaryRequest = new AccountsRequest();
+            summaryRequest.accounts = sprocResponse2.Response;
+
             StoredProcedureResponse<AccountsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
-                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, sprocResponse2.Response);
+                                                                "/dbs/Rodrap50/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, summaryRequest);
 
             
             return new OkObjectResult(document);

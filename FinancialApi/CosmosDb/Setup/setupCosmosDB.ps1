@@ -58,6 +58,7 @@ New-CosmosDbDocument -Context $cosmosDbContext -CollectionId $containerId -Docum
 New-FinancialStoredProcedure -DocumentPath .\StoredProcedures\AddAccountTransaction.js -StoredProcedureId 'AddAccountTransaction' -ContainerId $containerId -CosmosDbContext $cosmosDbContext
 New-FinancialStoredProcedure -DocumentPath .\StoredProcedures\AddAcount.js -StoredProcedureId 'AddAccount' -ContainerId $containerId -CosmosDbContext $cosmosDbContext
 New-FinancialStoredProcedure -DocumentPath .\StoredProcedures\ReserveNextAccount.js -StoredProcedureId 'ReserveNextAccount' -ContainerId $containerId -CosmosDbContext $cosmosDbContext
+New-FinancialStoredProcedure -DocumentPath .\StoredProcedures\ReserveNextTransaction.js -StoredProcedureId 'ReserveNextTransaction' -ContainerId $containerId -CosmosDbContext $cosmosDbContext
 New-FinancialStoredProcedure -DocumentPath .\StoredProcedures\ReserveNextEvent.js -StoredProcedureId 'ReserveNextEvent' -ContainerId $containerId -CosmosDbContext $cosmosDbContext
 New-FinancialStoredProcedure -DocumentPath .\StoredProcedures\UpdateAccountDetails.js -StoredProcedureId 'UpdateAccountDetails' -ContainerId $containerId -CosmosDbContext $cosmosDbContext
 New-FinancialStoredProcedure -DocumentPath .\StoredProcedures\UpdateAccountListing.js -StoredProcedureId 'UpdateAccountListing' -ContainerId $containerId -CosmosDbContext $cosmosDbContext
