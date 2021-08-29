@@ -41,12 +41,19 @@
             <div class="col-md-4">
                 <form>
                     <div class="form-group">
-
+                        
+                        @if(listing.GeneralAccountEntries.Length > 1){
                         
                         <SelectSearch SelectSearchLabel="General Account"
                                         Items="@listing.GeneralAccountEntries"
                                         @bind-SelectedItemKey="record.GeneralAccountId">
+                                        
                         </SelectSearch>
+                        }
+                        else{
+                            record.GeneralAccountId = listing.GeneralAccountEntries[0].Id;
+                            <label for="General Account" class="contrl-label"></label>
+                        }
 
 
                     </div>
@@ -76,7 +83,6 @@
                         <SelectSearch SelectSearchLabel="Event" Items="@eventEntries"
                         @bind-SelectedItemKey="record.EventId">
                         </SelectSearch>
-
                     </div>
 
                     <div class="form-group">
