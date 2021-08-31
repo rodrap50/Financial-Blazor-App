@@ -8,7 +8,6 @@ namespace Rodrap50.Financial.Api.Models
     public class AccountCreateModel
     {
         public string AccountName { get; set; }
-        public decimal Balance { get; set; }
         public Boolean SoftAccount { get; set; }
         public string GeneralAccountId { get; set; }
 
@@ -17,7 +16,7 @@ namespace Rodrap50.Financial.Api.Models
         {
             Account factory = new Account();
             factory.AccountName = this.AccountName;
-            factory.Balance = this.Balance;
+            factory.Balance = 0;
             factory.SoftAccount = this.SoftAccount;
             factory.GeneralAccountId = this.GeneralAccountId;
 
