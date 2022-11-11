@@ -9,7 +9,5 @@ namespace FinancialApp.Data
         [JsonProperty(PropertyName = "softAccountList")]
         public AccountEntry[] SoftAccountList { get; set; }
 
-        
-
     }
 }
