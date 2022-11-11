@@ -247,6 +247,23 @@ StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteS
             return new OkObjectResult(eventRecord);
         }
 
+
+ [FunctionName("GetTransaction")]
+        public static async Task<IActionResult> GetTransaction([HttpTrigger(AuthorizationLevel.Function, "get", Route = "transaction/{id}")] HttpRequest request, string id,
+            [CosmosDB(
+                databaseName: "Rodrap50",
+                collectionName: "Financials",
+                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+                ILogger logger
+
+        )
+        {
+            logger.LogInformation("X# HTTP GetTranssaction trigger function processed a request.");
+            var docUri = UriFactory.CreateDocumentUri("Rodrap50", "Financials", id);
+            Transaction response = await client.ReadDocumentAsync<Transaction>(docUri, new RequestOptions { PartitionKey = new PartitionKey("transaction")});
+            return new OkObjectResult(response);
+        }
+
         [FunctionName("CreateTransaction")]
         public static async Task<IActionResult> CreateTransaction([HttpTrigger(AuthorizationLevel.Function, "put", Route = "transaction")] HttpRequest request,
             [CosmosDB(
