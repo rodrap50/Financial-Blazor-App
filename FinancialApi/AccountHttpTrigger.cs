@@ -16,13 +16,13 @@ using Financial.Api.Data.Requests;
 
 namespace Financial.Api
 {
-    public static class AccountHttpTrigger
+    /*public static class AccountHttpTrigger
     {
         [FunctionName("GetAccountsSummary")]
         public static IActionResult GetAccountsSummary(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "accounts")] HttpRequest req,
              [CosmosDB(
-                databaseName: ",
+                databaseName: "Rodrap50",
                 collectionName: "Financials",
                 ConnectionStringSetting = "CosmosDBConnection",
                 Id = "1000",
@@ -39,7 +39,7 @@ namespace Financial.Api
         public static IActionResult GetListings(
                 [HttpTrigger(AuthorizationLevel.Function, "get", Route = "listings")] HttpRequest req,
                  [CosmosDB(
-                databaseName: ",
+                databaseName: "Rodrap50",
                 collectionName: "Financials",
                 ConnectionStringSetting = "CosmosDBConnection",
                 Id = "1001",
@@ -54,7 +54,7 @@ namespace Financial.Api
         [FunctionName("GetAccount")]
         public static IActionResult GetAccount([HttpTrigger(AuthorizationLevel.Function, "get", Route = "account/{id}")] HttpRequest req,
              [CosmosDB(
-                databaseName: ",
+                databaseName: "Rodrap50",
                 collectionName: "Financials",
                 ConnectionStringSetting = "CosmosDBConnection",
                 Id = "{id}",
@@ -71,7 +71,7 @@ namespace Financial.Api
         public static async Task<IActionResult> UpdateAccountDetails(
             [HttpTrigger(AuthorizationLevel.Function, "put", Route = "account/{id}")] HttpRequest request,
             [CosmosDB(
-                databaseName: ",
+                databaseName: "Rodrap50",
                 collectionName: "Financials",
                 ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
                 ILogger logger
@@ -96,7 +96,7 @@ namespace Financial.Api
 
             if (account.SoftAccount)
             {
-                var docUri = UriFactory.CreateDocumentUri(", "Financials", account.GeneralAccountId);
+                var docUri = UriFactory.CreateDocumentUri("Rodrap50", "Financials", account.GeneralAccountId);
                 generalAccount = await client.ReadDocumentAsync<Account>(docUri);
             }
             else
@@ -110,13 +110,13 @@ namespace Financial.Api
             return new OkObjectResult(account);
         }
 
-        /*
+        *//*
         [FunctionName("DeleteAccount")]
         */
 
         /*
         [FunctionName("CloseAccount")]
-        */
+        *//*
 
 
 
@@ -124,7 +124,7 @@ namespace Financial.Api
         public static async Task<IActionResult> CreateAccount(
             [HttpTrigger(AuthorizationLevel.Function, "put", Route = "account")] HttpRequest request,
             [CosmosDB(
-                databaseName: ",
+                databaseName: "Rodrap50",
                 collectionName: "Financials",
                 ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
                 ILogger logger
@@ -152,7 +152,7 @@ namespace Financial.Api
 
             if (sprocResponse1.Response.SoftAccount)
             {
-                var docUri = UriFactory.CreateDocumentUri(", "Financials", sprocResponse1.Response.GeneralAccountId);
+                var docUri = UriFactory.CreateDocumentUri("Rodrap50", "Financials", sprocResponse1.Response.GeneralAccountId);
                 generalAccount = await client.ReadDocumentAsync<Account>(docUri,  new RequestOptions { PartitionKey = new PartitionKey("account") });
             }
             else
@@ -170,7 +170,7 @@ namespace Financial.Api
         [FunctionName("CreateEvent")]
         public static async Task<IActionResult> CreateEvent([HttpTrigger(AuthorizationLevel.Function, "put", Route = "event")] HttpRequest request,
             [CosmosDB(
-                databaseName: ",
+                databaseName: "Rodrap50",
                 collectionName: "Financials",
                 ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
                 ILogger logger
@@ -207,7 +207,7 @@ namespace Financial.Api
         public static async Task<IActionResult> UpdateEventDetails(
            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "event/{id}")] HttpRequest request,
            [CosmosDB(
-                databaseName: ",
+                databaseName: "Rodrap50",
                 collectionName: "Financials",
                 ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
                ILogger logger
@@ -234,7 +234,7 @@ StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteS
         [FunctionName("GetEvent")]
         public static IActionResult GetEvent([HttpTrigger(AuthorizationLevel.Function, "get", Route = "event/{id}")] HttpRequest req,
                     [CosmosDB(
-                databaseName: ",
+                databaseName: "Rodrap50",
                 collectionName: "Financials",
                 ConnectionStringSetting = "CosmosDBConnection",
                 Id = "{id}",
@@ -251,7 +251,7 @@ StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteS
  [FunctionName("GetTransaction")]
         public static async Task<IActionResult> GetTransaction([HttpTrigger(AuthorizationLevel.Function, "get", Route = "transaction/{id}")] HttpRequest request, string id,
             [CosmosDB(
-                databaseName: ",
+                databaseName: "Rodrap50",
                 collectionName: "Financials",
                 ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
                 ILogger logger
@@ -259,7 +259,7 @@ StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteS
         )
         {
             logger.LogInformation("X# HTTP GetTranssaction trigger function processed a request.");
-            var docUri = UriFactory.CreateDocumentUri(", "Financials", id);
+            var docUri = UriFactory.CreateDocumentUri("Rodrap50", "Financials", id);
             Transaction response = await client.ReadDocumentAsync<Transaction>(docUri, new RequestOptions { PartitionKey = new PartitionKey("transaction")});
             return new OkObjectResult(response);
         }
@@ -267,7 +267,7 @@ StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteS
         [FunctionName("CreateTransaction")]
         public static async Task<IActionResult> CreateTransaction([HttpTrigger(AuthorizationLevel.Function, "put", Route = "transaction")] HttpRequest request,
             [CosmosDB(
-                databaseName: ",
+                databaseName: "Rodrap50",
                 collectionName: "Financials",
                 ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
                 ILogger logger
@@ -300,5 +300,5 @@ StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteS
 
 
         }
-    }
+    }*/
 }

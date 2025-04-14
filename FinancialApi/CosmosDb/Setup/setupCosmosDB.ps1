@@ -3,15 +3,15 @@ If($PSVersionTable.PSVersion.Major -lt 7){
     Write-Output "UPDATE POWERSHELL to 7.x +"
     exit 0xA
 }
-
+$verbose = $true
 $module = Get-Module -ListAvailable| Where {$_.name -like "CosmosDB"}
 
 If($null -eq $module){
     Write-Output "Installing CosmosDB Module"
-    Install-Module -Name CosmosDB -Scope CurrentUser -Force
+    Install-Module -Name CosmosDB -Scope CurrentUser -Force -SkipCertificateCheck
 }
-
-$cosmosDbContext = New-CosmosDbContext -Emulator 
+$uri = "http://localhost:8081/"
+$cosmosDbContext = New-CosmosDbContext -Emulator -uri $uri
 $databaseId = $args[0]
 if($null -eq $databaseId) {
     $databaseId = "Rodrap50"
@@ -19,13 +19,14 @@ if($null -eq $databaseId) {
 $containerId = 'Financials'
 $partitionKey = 'recordCode'
 
+
 function New-FinancialCosmosDB {
     param (
         $CosmosDbContext,
         $DatabaseId
     )
 
-    New-CosmosDbDatabase -Context $CosmosDbContext -I $DatabaseId
+    New-CosmosDbDatabase -Context $CosmosDbContext -I $DatabaseId -Verbose:$verbose
 }
 
 function New-FinancialStoredProcedure {
@@ -38,7 +39,7 @@ function New-FinancialStoredProcedure {
     )
     $document = Get-Content -Path $DocumentPath -Raw
 
-    New-CosmosDbStoredProcedure -Context $CosmosDbContext -CollectionId $ContainerId -Id $StoredProcedureId -StoredProcedureBody $document 
+    New-CosmosDbStoredProcedure -Context $CosmosDbContext -CollectionId $ContainerId -Id $StoredProcedureId -StoredProcedureBody $document -Verbose:$verbose
 }
 
 
