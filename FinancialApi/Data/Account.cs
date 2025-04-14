@@ -2,9 +2,9 @@ using System;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
-using Rodrap50.Financial.Api.Data.Base;
+using Financial.Api.Data.Base;
 
-namespace Rodrap50.Financial.Api.Data
+namespace Financial.Api.Data
 {
     public class Account : AccountBase
     {

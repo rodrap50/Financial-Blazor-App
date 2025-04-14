@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Rodrap50.Financial.Api.Data.Base
+namespace Financial.Api.Data.Base
 {
     public class GeneralAccountEntry : AccountEntry
     {

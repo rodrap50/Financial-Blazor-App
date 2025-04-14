@@ -1,9 +1,9 @@
 using System;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
-using Rodrap50.Financial.Api.Data;
+using Financial.Api.Data;
 
-namespace Rodrap50.Financial.Api.Models {
+namespace Financial.Api.Models {
     public class EventCreateModel {
         public string EventName {get; set;}
    

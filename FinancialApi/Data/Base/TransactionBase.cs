@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
 
-namespace Rodrap50.Financial.Api.Data.Base
+namespace Financial.Api.Data.Base
 {
     public class TransactionBase {
        [JsonProperty(PropertyName = "recordId")]

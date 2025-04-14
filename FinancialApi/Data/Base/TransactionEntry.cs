@@ -2,7 +2,7 @@ using System;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
 
-namespace Rodrap50.Financial.Api.Data.Base
+namespace Financial.Api.Data.Base
 {
     public class TransactionEntry {
          [JsonProperty(PropertyName = "id")]

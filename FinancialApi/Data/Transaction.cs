@@ -1,9 +1,9 @@
 using System;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
-using Rodrap50.Financial.Api.Data.Base;
+using Financial.Api.Data.Base;
 
-namespace Rodrap50.Financial.Api.Data
+namespace Financial.Api.Data
 {
     public class Transaction : TransactionBase {
         [JsonProperty(PropertyName = "id")]

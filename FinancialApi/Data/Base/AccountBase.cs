@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
 
-namespace Rodrap50.Financial.Api.Data.Base
+namespace Financial.Api.Data.Base
 {
     public class AccountBase
     {

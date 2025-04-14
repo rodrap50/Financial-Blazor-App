@@ -1,10 +1,10 @@
 using System;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
-using Rodrap50.Financial.Api.Data;
-using Rodrap50.Financial.Api.Data.Base;
+using Financial.Api.Data;
+using Financial.Api.Data.Base;
 
-namespace Rodrap50.Financial.Api.Models {
+namespace Financial.Api.Models {
     public class TransactionCreateModel : TransactionBase {
         
         public Transaction GenerateTransaction() {
