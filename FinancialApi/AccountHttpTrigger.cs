@@ -14,291 +14,290 @@ using Financial.Api.Data.Base;
 using Financial.Api.Data.Responses;
 using Financial.Api.Data.Requests;
 
-namespace Financial.Api
+namespace Financial.Api;
+
+/*public static class AccountHttpTrigger
 {
-    /*public static class AccountHttpTrigger
+    [FunctionName("GetAccountsSummary")]
+    public static IActionResult GetAccountsSummary(
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "accounts")] HttpRequest req,
+         [CosmosDB(
+            databaseName: "Rodrap50",
+            collectionName: "Financials",
+            ConnectionStringSetting = "CosmosDBConnection",
+            Id = "1000",
+            PartitionKey = "accountsummary")] AccountsResponse accounts,
+            ILogger log)
     {
-        [FunctionName("GetAccountsSummary")]
-        public static IActionResult GetAccountsSummary(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "accounts")] HttpRequest req,
+        log.LogInformation("C# HTTP GetAccounts trigger function processed a request.");
+
+        return new OkObjectResult(accounts);
+    }
+
+
+    [FunctionName("GetListings")]
+    public static IActionResult GetListings(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "listings")] HttpRequest req,
              [CosmosDB(
-                databaseName: "Rodrap50",
-                collectionName: "Financials",
-                ConnectionStringSetting = "CosmosDBConnection",
-                Id = "1000",
-                PartitionKey = "accountsummary")] AccountsResponse accounts,
+            databaseName: "Rodrap50",
+            collectionName: "Financials",
+            ConnectionStringSetting = "CosmosDBConnection",
+            Id = "1001",
+            PartitionKey = "accountsummary")] ListingsResponse listings,
                 ILogger log)
-        {
-            log.LogInformation("C# HTTP GetAccounts trigger function processed a request.");
+    {
+        log.LogInformation("C# HTTP GetListings trigger function processed a request.");
 
-            return new OkObjectResult(accounts);
+        return new OkObjectResult(listings);
+    }
+
+    [FunctionName("GetAccount")]
+    public static IActionResult GetAccount([HttpTrigger(AuthorizationLevel.Function, "get", Route = "account/{id}")] HttpRequest req,
+         [CosmosDB(
+            databaseName: "Rodrap50",
+            collectionName: "Financials",
+            ConnectionStringSetting = "CosmosDBConnection",
+            Id = "{id}",
+            PartitionKey = "account")] AccountResponse account,
+            ILogger log)
+    {
+
+        log.LogInformation("C# HTTP GetAccount trigger function processed a request.");
+
+        return new OkObjectResult(account);
+    }
+
+    [FunctionName("UpdateAccountDetails")]
+    public static async Task<IActionResult> UpdateAccountDetails(
+        [HttpTrigger(AuthorizationLevel.Function, "put", Route = "account/{id}")] HttpRequest request,
+        [CosmosDB(
+            databaseName: "Rodrap50",
+            collectionName: "Financials",
+            ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+            ILogger logger
+    )
+    {
+        logger.LogInformation("C# HTTP CreateAccount trigger function processed a request.");
+        string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
+        var account = JsonConvert.DeserializeObject<Account>(requestBody);
+
+        StoredProcedureResponse<Account> sprocResponse = await client.ExecuteStoredProcedureAsync<Account>(
+                                                            "/dbs/colls/Financials/sprocs/UpdateAccountDetails/", new RequestOptions { PartitionKey = new PartitionKey("account") }, account);
+
+        account = sprocResponse.Response;
+
+        AccountsRequest summaryRequest = new AccountsRequest();
+        summaryRequest.accounts = new Account[]{account};
+
+        StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
+                                                            "/dbs/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, summaryRequest);
+
+        Account generalAccount = null;
+
+        if (account.SoftAccount)
+        {
+            var docUri = UriFactory.CreateDocumentUri("Rodrap50", "Financials", account.GeneralAccountId);
+            generalAccount = await client.ReadDocumentAsync<Account>(docUri);
+        }
+        else
+        {
+            generalAccount = account;
         }
 
+        StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<ListingsResponse>(
+                                                           "/dbs/colls/Financials/sprocs/UpdateAccountListing/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, generalAccount);
 
-        [FunctionName("GetListings")]
-        public static IActionResult GetListings(
-                [HttpTrigger(AuthorizationLevel.Function, "get", Route = "listings")] HttpRequest req,
-                 [CosmosDB(
-                databaseName: "Rodrap50",
-                collectionName: "Financials",
-                ConnectionStringSetting = "CosmosDBConnection",
-                Id = "1001",
-                PartitionKey = "accountsummary")] ListingsResponse listings,
-                    ILogger log)
+        return new OkObjectResult(account);
+    }
+
+    *//*
+    [FunctionName("DeleteAccount")]
+    */
+
+    /*
+    [FunctionName("CloseAccount")]
+    *//*
+
+
+
+    [FunctionName("CreateAccount")]
+    public static async Task<IActionResult> CreateAccount(
+        [HttpTrigger(AuthorizationLevel.Function, "put", Route = "account")] HttpRequest request,
+        [CosmosDB(
+            databaseName: "Rodrap50",
+            collectionName: "Financials",
+            ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+            ILogger logger
+    )
+    {
+        logger.LogInformation("C# HTTP CreateAccount trigger function processed a request.");
+        string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
+        var input = JsonConvert.DeserializeObject<AccountCreateModel>(requestBody);
+        var account = input.GenerateAccount();
+
+        StoredProcedureResponse<ReserveNextAccountResponse> sprocResponse = await client.ExecuteStoredProcedureAsync<ReserveNextAccountResponse>(
+                                                            "/dbs/colls/Financials/sprocs/ReserveNextAccount/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") });
+
+        account.RecordId = sprocResponse.Response.AccountId;
+
+        StoredProcedureResponse<AccountResponse> sprocResponse1 = await client.ExecuteStoredProcedureAsync<AccountResponse>("/dbs/colls/Financials/sprocs/AddAccount/", new RequestOptions { PartitionKey = new PartitionKey("account") }, account);
+
+        AccountsRequest summaryRequest = new AccountsRequest();
+        summaryRequest.accounts = new Account[]{account};
+
+        StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
+                                                            "/dbs/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") },summaryRequest);
+
+        Account generalAccount = null;
+
+        if (sprocResponse1.Response.SoftAccount)
         {
-            log.LogInformation("C# HTTP GetListings trigger function processed a request.");
-
-            return new OkObjectResult(listings);
+            var docUri = UriFactory.CreateDocumentUri("Rodrap50", "Financials", sprocResponse1.Response.GeneralAccountId);
+            generalAccount = await client.ReadDocumentAsync<Account>(docUri,  new RequestOptions { PartitionKey = new PartitionKey("account") });
+        }
+        else
+        {
+            generalAccount = sprocResponse1.Response;
         }
 
-        [FunctionName("GetAccount")]
-        public static IActionResult GetAccount([HttpTrigger(AuthorizationLevel.Function, "get", Route = "account/{id}")] HttpRequest req,
-             [CosmosDB(
-                databaseName: "Rodrap50",
-                collectionName: "Financials",
-                ConnectionStringSetting = "CosmosDBConnection",
-                Id = "{id}",
-                PartitionKey = "account")] AccountResponse account,
-                ILogger log)
-        {
+        StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<ListingsResponse>(
+                                                           "/dbs/colls/Financials/sprocs/UpdateAccountListing/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, generalAccount);
 
-            log.LogInformation("C# HTTP GetAccount trigger function processed a request.");
 
-            return new OkObjectResult(account);
-        }
+        return new OkObjectResult(sprocResponse1.Response);
+    }
 
-        [FunctionName("UpdateAccountDetails")]
-        public static async Task<IActionResult> UpdateAccountDetails(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "account/{id}")] HttpRequest request,
-            [CosmosDB(
-                databaseName: "Rodrap50",
-                collectionName: "Financials",
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
-                ILogger logger
-        )
-        {
-            logger.LogInformation("C# HTTP CreateAccount trigger function processed a request.");
-            string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
-            var account = JsonConvert.DeserializeObject<Account>(requestBody);
+    [FunctionName("CreateEvent")]
+    public static async Task<IActionResult> CreateEvent([HttpTrigger(AuthorizationLevel.Function, "put", Route = "event")] HttpRequest request,
+        [CosmosDB(
+            databaseName: "Rodrap50",
+            collectionName: "Financials",
+            ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+            ILogger logger
 
-            StoredProcedureResponse<Account> sprocResponse = await client.ExecuteStoredProcedureAsync<Account>(
-                                                                "/dbs/colls/Financials/sprocs/UpdateAccountDetails/", new RequestOptions { PartitionKey = new PartitionKey("account") }, account);
+    )
+    {
+        logger.LogInformation("C# HTTP CreateEvent trigger function processed a request.");
+        string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
+        var input = JsonConvert.DeserializeObject<EventCreateModel>(requestBody);
+        var financialEvent = input.GenerateEvent();
 
-            account = sprocResponse.Response;
+        StoredProcedureResponse<ReserveNextEventResponse> sprocResponse = await client.ExecuteStoredProcedureAsync<ReserveNextEventResponse>(
+                                                            "/dbs/colls/Financials/sprocs/ReserveNextEvent/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") });
 
-            AccountsRequest summaryRequest = new AccountsRequest();
-            summaryRequest.accounts = new Account[]{account};
+        financialEvent.RecordId = sprocResponse.Response.EventId;
 
-            StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
-                                                                "/dbs/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, summaryRequest);
-
-            Account generalAccount = null;
-
-            if (account.SoftAccount)
-            {
-                var docUri = UriFactory.CreateDocumentUri("Rodrap50", "Financials", account.GeneralAccountId);
-                generalAccount = await client.ReadDocumentAsync<Account>(docUri);
-            }
-            else
-            {
-                generalAccount = account;
-            }
-
-            StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<ListingsResponse>(
-                                                               "/dbs/colls/Financials/sprocs/UpdateAccountListing/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, generalAccount);
-
-            return new OkObjectResult(account);
-        }
-
-        *//*
-        [FunctionName("DeleteAccount")]
-        */
-
-        /*
-        [FunctionName("CloseAccount")]
-        *//*
+        Document document = await client.CreateDocumentAsync("/dbs/colls/Financials/", financialEvent);
 
 
 
-        [FunctionName("CreateAccount")]
-        public static async Task<IActionResult> CreateAccount(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "account")] HttpRequest request,
-            [CosmosDB(
-                databaseName: "Rodrap50",
-                collectionName: "Financials",
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
-                ILogger logger
-        )
-        {
-            logger.LogInformation("C# HTTP CreateAccount trigger function processed a request.");
-            string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
-            var input = JsonConvert.DeserializeObject<AccountCreateModel>(requestBody);
-            var account = input.GenerateAccount();
-
-            StoredProcedureResponse<ReserveNextAccountResponse> sprocResponse = await client.ExecuteStoredProcedureAsync<ReserveNextAccountResponse>(
-                                                                "/dbs/colls/Financials/sprocs/ReserveNextAccount/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") });
-
-            account.RecordId = sprocResponse.Response.AccountId;
-
-            StoredProcedureResponse<AccountResponse> sprocResponse1 = await client.ExecuteStoredProcedureAsync<AccountResponse>("/dbs/colls/Financials/sprocs/AddAccount/", new RequestOptions { PartitionKey = new PartitionKey("account") }, account);
-
-            AccountsRequest summaryRequest = new AccountsRequest();
-            summaryRequest.accounts = new Account[]{account};
-
-            StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
-                                                                "/dbs/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") },summaryRequest);
-
-            Account generalAccount = null;
-
-            if (sprocResponse1.Response.SoftAccount)
-            {
-                var docUri = UriFactory.CreateDocumentUri("Rodrap50", "Financials", sprocResponse1.Response.GeneralAccountId);
-                generalAccount = await client.ReadDocumentAsync<Account>(docUri,  new RequestOptions { PartitionKey = new PartitionKey("account") });
-            }
-            else
-            {
-                generalAccount = sprocResponse1.Response;
-            }
-
-            StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<ListingsResponse>(
-                                                               "/dbs/colls/Financials/sprocs/UpdateAccountListing/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, generalAccount);
+        StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
+                                                            "/dbs/colls/Financials/sprocs/UpdateEventSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, financialEvent);
 
 
-            return new OkObjectResult(sprocResponse1.Response);
-        }
-
-        [FunctionName("CreateEvent")]
-        public static async Task<IActionResult> CreateEvent([HttpTrigger(AuthorizationLevel.Function, "put", Route = "event")] HttpRequest request,
-            [CosmosDB(
-                databaseName: "Rodrap50",
-                collectionName: "Financials",
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
-                ILogger logger
-
-        )
-        {
-            logger.LogInformation("C# HTTP CreateEvent trigger function processed a request.");
-            string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
-            var input = JsonConvert.DeserializeObject<EventCreateModel>(requestBody);
-            var financialEvent = input.GenerateEvent();
-
-            StoredProcedureResponse<ReserveNextEventResponse> sprocResponse = await client.ExecuteStoredProcedureAsync<ReserveNextEventResponse>(
-                                                                "/dbs/colls/Financials/sprocs/ReserveNextEvent/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") });
-
-            financialEvent.RecordId = sprocResponse.Response.EventId;
-
-            Document document = await client.CreateDocumentAsync("/dbs/colls/Financials/", financialEvent);
+        StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<ListingsResponse>(
+                                                           "/dbs/colls/Financials/sprocs/UpdateEventListing/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, financialEvent);
 
 
+        return new OkObjectResult(document);
 
-            StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
-                                                                "/dbs/colls/Financials/sprocs/UpdateEventSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, financialEvent);
+    }
 
+    [FunctionName("UpdateEventDetails")]
+    public static async Task<IActionResult> UpdateEventDetails(
+       [HttpTrigger(AuthorizationLevel.Function, "put", Route = "event/{id}")] HttpRequest request,
+       [CosmosDB(
+            databaseName: "Rodrap50",
+            collectionName: "Financials",
+            ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+           ILogger logger
+   )
+    {
+        logger.LogInformation("C# HTTP UpdateEventDetails trigger function processed a request.");
+        string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
+        var individualEvent = JsonConvert.DeserializeObject<FinancialEvent>(requestBody);
 
-            StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<ListingsResponse>(
-                                                               "/dbs/colls/Financials/sprocs/UpdateEventListing/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, financialEvent);
+        StoredProcedureResponse<FinancialEvent> sprocResponse = await client.ExecuteStoredProcedureAsync<FinancialEvent>(
+                                                            "/dbs/colls/Financials/sprocs/UpdateEventDetails/", new RequestOptions { PartitionKey = new PartitionKey("event") }, individualEvent);
 
+        individualEvent = sprocResponse.Response;
 
-            return new OkObjectResult(document);
-
-        }
-
-        [FunctionName("UpdateEventDetails")]
-        public static async Task<IActionResult> UpdateEventDetails(
-           [HttpTrigger(AuthorizationLevel.Function, "put", Route = "event/{id}")] HttpRequest request,
-           [CosmosDB(
-                databaseName: "Rodrap50",
-                collectionName: "Financials",
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
-               ILogger logger
-       )
-        {
-            logger.LogInformation("C# HTTP UpdateEventDetails trigger function processed a request.");
-            string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
-            var individualEvent = JsonConvert.DeserializeObject<FinancialEvent>(requestBody);
-
-            StoredProcedureResponse<FinancialEvent> sprocResponse = await client.ExecuteStoredProcedureAsync<FinancialEvent>(
-                                                                "/dbs/colls/Financials/sprocs/UpdateEventDetails/", new RequestOptions { PartitionKey = new PartitionKey("event") }, individualEvent);
-
-            individualEvent = sprocResponse.Response;
-
-            StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
-                                                                "/dbs/colls/Financials/sprocs/UpdateEventSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, individualEvent);
+        StoredProcedureResponse<AccountsResponse> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
+                                                            "/dbs/colls/Financials/sprocs/UpdateEventSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, individualEvent);
 
 StoredProcedureResponse<ListingsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<ListingsResponse>(
-                                                               "/dbs/colls/Financials/sprocs/UpdateEventListing/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, individualEvent);
+                                                           "/dbs/colls/Financials/sprocs/UpdateEventListing/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, individualEvent);
 
-            return new OkObjectResult(individualEvent);
-        }
+        return new OkObjectResult(individualEvent);
+    }
 
-        [FunctionName("GetEvent")]
-        public static IActionResult GetEvent([HttpTrigger(AuthorizationLevel.Function, "get", Route = "event/{id}")] HttpRequest req,
-                    [CosmosDB(
-                databaseName: "Rodrap50",
-                collectionName: "Financials",
-                ConnectionStringSetting = "CosmosDBConnection",
-                Id = "{id}",
-                PartitionKey = "event")] FinancialEvent eventRecord,
-                       ILogger log)
-        {
+    [FunctionName("GetEvent")]
+    public static IActionResult GetEvent([HttpTrigger(AuthorizationLevel.Function, "get", Route = "event/{id}")] HttpRequest req,
+                [CosmosDB(
+            databaseName: "Rodrap50",
+            collectionName: "Financials",
+            ConnectionStringSetting = "CosmosDBConnection",
+            Id = "{id}",
+            PartitionKey = "event")] FinancialEvent eventRecord,
+                   ILogger log)
+    {
 
-            log.LogInformation("C# HTTP GetEvent trigger function processed a request.");
+        log.LogInformation("C# HTTP GetEvent trigger function processed a request.");
 
-            return new OkObjectResult(eventRecord);
-        }
-
-
- [FunctionName("GetTransaction")]
-        public static async Task<IActionResult> GetTransaction([HttpTrigger(AuthorizationLevel.Function, "get", Route = "transaction/{id}")] HttpRequest request, string id,
-            [CosmosDB(
-                databaseName: "Rodrap50",
-                collectionName: "Financials",
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
-                ILogger logger
-
-        )
-        {
-            logger.LogInformation("X# HTTP GetTranssaction trigger function processed a request.");
-            var docUri = UriFactory.CreateDocumentUri("Rodrap50", "Financials", id);
-            Transaction response = await client.ReadDocumentAsync<Transaction>(docUri, new RequestOptions { PartitionKey = new PartitionKey("transaction")});
-            return new OkObjectResult(response);
-        }
-
-        [FunctionName("CreateTransaction")]
-        public static async Task<IActionResult> CreateTransaction([HttpTrigger(AuthorizationLevel.Function, "put", Route = "transaction")] HttpRequest request,
-            [CosmosDB(
-                databaseName: "Rodrap50",
-                collectionName: "Financials",
-                ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
-                ILogger logger
-
-        )
-        {
-            logger.LogInformation("C# HTTP CreateTransaction trigger function processed a request.");
-            string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
-            var input = JsonConvert.DeserializeObject<TransactionCreateModel>(requestBody);
-            var transaction = input.GenerateTransaction();
-
-            StoredProcedureResponse<ReserveNextTransactionResponse> sprocResponse = await client.ExecuteStoredProcedureAsync<ReserveNextTransactionResponse>(
-                                                                "/dbs/colls/Financials/sprocs/ReserveNextTransaction/", new RequestOptions { PartitionKey = new PartitionKey("account") }, transaction.GeneralAccountId);
-
-            transaction.RecordId = sprocResponse.Response.TransactionRecordId;
-
-            Document document = await client.CreateDocumentAsync("/dbs/colls/Financials/", transaction);
-
-            StoredProcedureResponse<AccountResponse[]> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountResponse[]>(
-                                                                "/dbs/colls/Financials/sprocs/AddAccountTransaction/", new RequestOptions { PartitionKey = new PartitionKey("account") }, transaction);
-
-            AccountsRequest summaryRequest = new AccountsRequest();
-            summaryRequest.accounts = sprocResponse2.Response;
-
-            StoredProcedureResponse<AccountsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
-                                                                "/dbs/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, summaryRequest);
+        return new OkObjectResult(eventRecord);
+    }
 
 
-            return new OkObjectResult(document);
+[FunctionName("GetTransaction")]
+    public static async Task<IActionResult> GetTransaction([HttpTrigger(AuthorizationLevel.Function, "get", Route = "transaction/{id}")] HttpRequest request, string id,
+        [CosmosDB(
+            databaseName: "Rodrap50",
+            collectionName: "Financials",
+            ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+            ILogger logger
+
+    )
+    {
+        logger.LogInformation("X# HTTP GetTranssaction trigger function processed a request.");
+        var docUri = UriFactory.CreateDocumentUri("Rodrap50", "Financials", id);
+        Transaction response = await client.ReadDocumentAsync<Transaction>(docUri, new RequestOptions { PartitionKey = new PartitionKey("transaction")});
+        return new OkObjectResult(response);
+    }
+
+    [FunctionName("CreateTransaction")]
+    public static async Task<IActionResult> CreateTransaction([HttpTrigger(AuthorizationLevel.Function, "put", Route = "transaction")] HttpRequest request,
+        [CosmosDB(
+            databaseName: "Rodrap50",
+            collectionName: "Financials",
+            ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+            ILogger logger
+
+    )
+    {
+        logger.LogInformation("C# HTTP CreateTransaction trigger function processed a request.");
+        string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
+        var input = JsonConvert.DeserializeObject<TransactionCreateModel>(requestBody);
+        var transaction = input.GenerateTransaction();
+
+        StoredProcedureResponse<ReserveNextTransactionResponse> sprocResponse = await client.ExecuteStoredProcedureAsync<ReserveNextTransactionResponse>(
+                                                            "/dbs/colls/Financials/sprocs/ReserveNextTransaction/", new RequestOptions { PartitionKey = new PartitionKey("account") }, transaction.GeneralAccountId);
+
+        transaction.RecordId = sprocResponse.Response.TransactionRecordId;
+
+        Document document = await client.CreateDocumentAsync("/dbs/colls/Financials/", transaction);
+
+        StoredProcedureResponse<AccountResponse[]> sprocResponse2 = await client.ExecuteStoredProcedureAsync<AccountResponse[]>(
+                                                            "/dbs/colls/Financials/sprocs/AddAccountTransaction/", new RequestOptions { PartitionKey = new PartitionKey("account") }, transaction);
+
+        AccountsRequest summaryRequest = new AccountsRequest();
+        summaryRequest.accounts = sprocResponse2.Response;
+
+        StoredProcedureResponse<AccountsResponse> sprocResponse3 = await client.ExecuteStoredProcedureAsync<AccountsResponse>(
+                                                            "/dbs/colls/Financials/sprocs/UpdateAccountSummary/", new RequestOptions { PartitionKey = new PartitionKey("accountsummary") }, summaryRequest);
 
 
-        }
-    }*/
-}
+        return new OkObjectResult(document);
+
+
+    }
+}*/

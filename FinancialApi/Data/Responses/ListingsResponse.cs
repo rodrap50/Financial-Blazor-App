@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Financial.Api.Data.Base;
 
-namespace Financial.Api.Data.Responses
+namespace Financial.Api.Data.Responses;
+
+public class ListingsResponse
 {
-    public class ListingsResponse
-    {
 
-        [JsonProperty(PropertyName = "generalAccountEntries")]
-        public GeneralAccountEntry[] GeneralAccountEntries { get; set; }
-        [JsonProperty(PropertyName = "eventEntries")]
+    [JsonProperty(PropertyName = "generalAccountEntries")]
+    public GeneralAccountEntry[] GeneralAccountEntries { get; set; }
+    [JsonProperty(PropertyName = "eventEntries")]
 
-        public EventEntry[] EventEntries { get; set; }
-    }
+    public EventEntry[] EventEntries { get; set; }
 }

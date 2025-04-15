@@ -8,9 +8,15 @@ $module = Get-Module -ListAvailable| Where {$_.name -like "CosmosDB"}
 
 If($null -eq $module){
     Write-Output "Installing CosmosDB Module"
-    Install-Module -Name CosmosDB -Scope CurrentUser -Force -SkipCertificateCheck
+    try{
+    Install-Module -Name CosmosDB -Scope CurrentUser -Force -AllowClobber
+    }
+    catch{
+        Write-Output "Failed to install CosmosDB Module"
+        exit 0xA
+    }
 }
-$uri = "http://localhost:8081/"
+$uri = "https://localhost:8081"
 $cosmosDbContext = New-CosmosDbContext -Emulator -uri $uri
 $databaseId = $args[0]
 if($null -eq $databaseId) {
@@ -30,7 +36,7 @@ function New-FinancialCosmosDB {
 }
 
 function New-FinancialStoredProcedure {
-    
+
     param (
         $DocumentPath,
         $StoredProcedureId,

@@ -7,11 +7,13 @@ using System;
 namespace Financial.Api;
 using Data;
 using Infrastructure;
+using Serilog;
 
 public class Startup : FunctionsStartup
 {
     public override void Configure(IFunctionsHostBuilder builder)
     {
+       // builder.Services.AddHttpClient();
         //throw new System.NotImplementedException();
         string cosmosEndpoint = Environment.GetEnvironmentVariable("CosmosDbEndpoint") ?? "https://localhost:8081";
         string cosmosKey = Environment.GetEnvironmentVariable("CosmosDbKey") ?? "Financials";
@@ -19,28 +21,24 @@ public class Startup : FunctionsStartup
         builder.Services.AddDbContext<CosmosDbContext>(options =>
                 options.UseCosmos(
                     connectionString: cosmosEndpoint,
-                    databaseName: databaseName,
-                    cosmosOptionsAction: cosmosOptions =>
-                    {
-                        // Optional: Configure connection mode
-                        // cosmosOptions.ConnectionMode(ConnectionMode.Direct);
-
-                        // Set up the account key
-                        //cosmosOptions.AccountKey(cosmosKey);
-
-                        // Configure throughput provisioning (can be at container level too)
-                        //cosmosOptions.DefaultRequestUnit(400);
-
-                        // Configure serialization options
-                        //cosmosOptions.JsonSerializerOptions(new System.Text.Json.JsonSerializerOptions
-                        //{
-                        //    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
-                        //    WriteIndented = false
-                        //});
-                    }
+                    databaseName: databaseName
                 )
             );
 
         builder.Services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
+        builder.Services.AddScoped<IAccountService, AccountService>();
+
+        builder.Services.AddLogging(logBuilder =>
+        {
+            logBuilder.AddSerilog(LoggerSetup());
+        });
+    }
+
+    private ILogger LoggerSetup()
+    {
+        return new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Console()
+            .CreateLogger();
     }
 }

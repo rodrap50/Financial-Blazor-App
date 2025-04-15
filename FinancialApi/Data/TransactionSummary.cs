@@ -4,20 +4,19 @@ using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
 using Financial.Api.Data.Base;
 
-namespace Financial.Api.Data
+namespace Financial.Api.Data;
+
+public class TransactionSummary
 {
-    public class TransactionSummary
-    {
-        [JsonProperty(PropertyName = "id")]
-        public string Id {get; set; } = Guid.NewGuid().ToString(format: "D");
-        [JsonProperty(PropertyName = "recordId")]
-        public string RecordId { get; set; }
-        [JsonProperty(PropertyName = "dateIncurred")]
-        public DateTime DateIncurred { get; set; }
-        [JsonProperty(PropertyName = "description")]
-        public string Description { get; set; }
-        [JsonProperty(PropertyName = "amount")]
-        public decimal Amount { get; set; }
-    }
+    [JsonProperty(PropertyName = "id")]
+    public string Id {get; set; } = Guid.NewGuid().ToString(format: "D");
+    [JsonProperty(PropertyName = "recordId")]
+    public string RecordId { get; set; }
+    [JsonProperty(PropertyName = "dateIncurred")]
+    public DateTime DateIncurred { get; set; }
+    [JsonProperty(PropertyName = "description")]
+    public string Description { get; set; }
+    [JsonProperty(PropertyName = "amount")]
+    public decimal Amount { get; set; }
 }
 
