@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using System.Net.Http.Json;
 
 
-namespace Financial.Api;
+namespace Financial.Api.Infrastructure.Controllers;
 using Data;
 using Infrastructure;
 using Microsoft.Azure.Functions.Worker;

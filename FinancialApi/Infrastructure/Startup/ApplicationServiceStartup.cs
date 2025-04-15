@@ -4,6 +4,7 @@ using Serilog;
 
 namespace Financial.Api.Infrastructure.Startup;
 using Data;
+using Financial.Api.Infrastructure.Controllers;
 using System;
 
 public static class ApplicationServiceStartup
@@ -14,7 +15,7 @@ public static class ApplicationServiceStartup
     public static IServiceCollection AddCustomServices(this IServiceCollection service)
     {
         service.AddHttpClient();
-
+        service.AddScoped<AccountFunctions>();
         service.AddDbContext<CosmosDbContext>(options =>
                 options.UseCosmos(
                     connectionString: cosmosEndpoint,

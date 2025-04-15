@@ -1,13 +1,12 @@
 ﻿
 using Financial.Api.Infrastructure.Startup;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults()
-    .ConfigureServices(services =>
-    {
-        services.AddCustomServices();
-    })
-    .Build();
+var builder = Host.CreateApplicationBuilder();
 
+builder.Services.AddCustomServices();
+builder.Services.AddFunctionsWorkerDefaults();
+
+var host = builder.Build();
 await host.RunAsync();
