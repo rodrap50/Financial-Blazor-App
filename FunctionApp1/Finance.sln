@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionApp1", "FunctionApp1\FunctionApp1.csproj", "{CF3A3D56-C8D5-4284-BB3D-9272C0EE2237}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Financial.Api", "..\FinancialApi\Financial.Api.csproj", "{C1EBF85E-1EBF-4DA0-A771-8312954076BD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinancialApp", "..\FinancialApp\FinancialApp.csproj", "{492B216B-1A09-49A0-989E-DC49A3D51A72}"
@@ -15,10 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CF3A3D56-C8D5-4284-BB3D-9272C0EE2237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CF3A3D56-C8D5-4284-BB3D-9272C0EE2237}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CF3A3D56-C8D5-4284-BB3D-9272C0EE2237}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF3A3D56-C8D5-4284-BB3D-9272C0EE2237}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C1EBF85E-1EBF-4DA0-A771-8312954076BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C1EBF85E-1EBF-4DA0-A771-8312954076BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1EBF85E-1EBF-4DA0-A771-8312954076BD}.Release|Any CPU.ActiveCfg = Release|Any CPU

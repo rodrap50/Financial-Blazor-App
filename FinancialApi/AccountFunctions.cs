@@ -2,50 +2,49 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using System.Net.Http.Json;
 
 
 namespace Financial.Api;
 using Data;
 using Infrastructure;
-using Microsoft.Azure.Documents;
+using Microsoft.Azure.Functions.Worker;
 using System;
-using System.IO;
-using System.Text.Json;
 
 public class AccountFunctions(IAccountService accountService)
 {
-    [FunctionName("GetAllAccounts")]
+    [Function("GetAllAccounts")]
     public async Task<IEnumerable<Account>> GetAllAccounts([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req)
     {
         return await accountService.GetAllAccountsAsync();
     }
 
-    [FunctionName("GetAccountById")]
+    [Function("GetAccountById")]
     public async Task<Account> GetAccountById([HttpTrigger(AuthorizationLevel.Function, "get", Route = "account/{accountId}")] HttpRequest req, string accountId)
     {
         return await accountService.GetAccountByIdAsync(Guid.Parse(accountId));
     }
-    [FunctionName("CreateAccount")]
+    [Function("CreateAccount")]
     public async Task<Account> CreateAccount([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req)
     {
-        var body = await req.ReadAsStringAsync();
-        var account = JsonSerializer.Deserialize<Account>(body);
+        //var body = await req.ReadAsStringAsync();
+        var account = await req.ReadFromJsonAsync<Account>();
+        //var account = JsonSerializer.Deserialize<Account>(body);
         return await accountService.CreateAccountAsync(account);
     }
-    [FunctionName("UpdateAccount")]
+    [Function("UpdateAccount")]
     public async Task<Account> UpdateAccount([HttpTrigger(AuthorizationLevel.Function, "put", Route = "account/{accountId}")] HttpRequest req, string accountId)
     {
-        var body = await req.ReadAsStringAsync();
-        var account = JsonSerializer.Deserialize<Account>(body);
-        if(accountService.AccountExistsAsync(Guid.Parse(accountId)).Result == false)
+        //var body = await req.ReadAsStringAsync();
+        //var account = JsonSerializer.Deserialize<Account>(body);
+        var account = await req.ReadFromJsonAsync<Account>();
+        if (accountService.AccountExistsAsync(Guid.Parse(accountId)).Result == false)
         {
             throw new ArgumentException("Account does not exist.", nameof(accountId));
         }
         return await accountService.UpdateAccountAsync(account);
     }
-    [FunctionName("DeleteAccount")]
+    [Function("DeleteAccount")]
     public async Task<bool> DeleteAccount([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "account/{accountId}")] HttpRequest req, string accountId)
     {
         if (accountService.AccountExistsAsync(Guid.Parse(accountId)).Result == false)
@@ -54,7 +53,7 @@ public class AccountFunctions(IAccountService accountService)
         }
         return await accountService.DeleteAccountAsync(Guid.Parse(accountId));
     }
-    [FunctionName("DeleteAllAccounts")]
+    [Function("DeleteAllAccounts")]
     public async Task<bool> DeleteAllAccounts([HttpTrigger(AuthorizationLevel.Function, "delete", Route = null)] HttpRequest req)
     {
         return await accountService.DeleteAllAccounts();

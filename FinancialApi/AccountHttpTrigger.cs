@@ -1,18 +1,18 @@
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Documents;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Financial.Api.Models;
-using Financial.Api.Data;
-using Financial.Api.Data.Base;
-using Financial.Api.Data.Responses;
-using Financial.Api.Data.Requests;
+//using System.IO;
+//using System.Threading.Tasks;
+//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.Azure.WebJobs;
+//using Microsoft.Azure.WebJobs.Extensions.Http;
+//using Microsoft.Azure.Documents.Client;
+//using Microsoft.Azure.Documents;
+//using Microsoft.AspNetCore.Http;
+//using Microsoft.Extensions.Logging;
+//using Newtonsoft.Json;
+//using Financial.Api.Models;
+//using Financial.Api.Data;
+//using Financial.Api.Data.Base;
+//using Financial.Api.Data.Responses;
+//using Financial.Api.Data.Requests;
 
 namespace Financial.Api;
 
