@@ -1,9 +1,9 @@
 using System;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
-using Financial.Api.Data;
+using Financial.Shared;
 
-namespace Financial.Api.Models; 
+namespace Financial.Api.Models;
 public class EventCreateModel {
     public string EventName {get; set;}
 

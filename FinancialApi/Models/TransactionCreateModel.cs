@@ -1,10 +1,9 @@
 using System;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
-using Financial.Api.Data;
-using Financial.Api.Data.Base;
+using Financial.Shared;
 
-namespace Financial.Api.Models; 
+namespace Financial.Api.Models;
 public class TransactionCreateModel : TransactionBase {
     
     public Transaction GenerateTransaction() {

@@ -1,28 +1,27 @@
 using System;
-using Newtonsoft.Json;
-using System.Runtime.Serialization;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
-namespace Financial.Api.Data.Base;
+namespace Financial.Shared;
 
 public class AccountBase
 {
-    [JsonProperty(PropertyName = "id")]
+    [JsonPropertyName("id")]
     public string Id { get; set; } = Guid.NewGuid().ToString(format: "D");
-    [JsonProperty(PropertyName = "recordId")]
+    [JsonPropertyName("recordId")]
     public string RecordId { get; set; }
 
-    [JsonProperty(PropertyName = "accountName")]
+    [JsonPropertyName("accountName")]
     public string AccountName { get; set; }
 
-    [JsonProperty(PropertyName = "softAccount")]
+    [JsonPropertyName("softAccount")]
     public Boolean SoftAccount { get; set; }
     // General Account ID set when Soft Account is true
-    [JsonProperty(PropertyName = "generalAccountId")]
+    [JsonPropertyName("generalAccountId")]
     public string GeneralAccountId { get; set; }
     // Soft Account List set when Soft Account is false
-    [JsonProperty(PropertyName = "softAccountList")]
+    [JsonPropertyName("softAccountList")]
     public List<AccountEntry> SoftAccountList { get; set; }
-    [JsonProperty(PropertyName = "balance")]
+    [JsonPropertyName("balance")]
     public decimal Balance { get; set; }
 }

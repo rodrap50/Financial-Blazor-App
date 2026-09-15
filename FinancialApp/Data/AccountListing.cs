@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Financial.Shared;
 
 namespace FinancialApp.Data
 {

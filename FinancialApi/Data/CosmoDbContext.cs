@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 namespace Financial.Api.Data;
-using Models;
+using Financial.Shared;
 using System.Threading.Tasks;
 
 public class CosmosDbContext : DbContext

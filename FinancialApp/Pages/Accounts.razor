@@ -1,6 +1,6 @@
 ﻿@page "/accounts"
-@using FinancialApp.Data
-@using Newtonsoft.Json
+@using Financial.Shared
+@using System.Net.Http.Json
 @inject HttpClient Http
 
 
@@ -24,7 +24,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var account in accounts.AccountSummaries)
+            @foreach (var account in accounts)
             {
                 @if(@account.SoftAccount == true) {
                 <tr>
@@ -47,7 +47,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var account in accounts.AccountSummaries)
+            @foreach (var account in accounts)
             {
                 @if(@account.SoftAccount == false) {
                 <tr>
@@ -64,12 +64,10 @@ else
 }
 
 @code {
-private AccountListing accounts;
+private List<Account> accounts;
 
     protected override async Task OnInitializedAsync()
     {
-        HttpResponseMessage response = await Http.GetAsync("http://localhost:7071/api/accounts");
-        string responseBody = await response.Content.ReadAsStringAsync();
-        accounts = JsonConvert.DeserializeObject<AccountListing>(responseBody);
+        accounts = await Http.GetFromJsonAsync<List<Account>>("api/GetAllAccounts");
     }
 }

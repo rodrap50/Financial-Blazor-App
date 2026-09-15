@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using Financial.Api.Data.Base;
+using Financial.Shared;
 
 namespace Financial.Api.Data.Responses;
 

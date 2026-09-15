@@ -2,6 +2,7 @@
 @inject IJSRuntime JSRuntime
 @using System.Net.Http.Json
 @using FinancialApp.Data
+@using Financial.Shared
 @using Newtonsoft.Json
 @inject HttpClient Http
 @inject Microsoft.AspNetCore.Components.NavigationManager navigation
@@ -177,10 +178,10 @@
 
     public Entry submission = new Entry();
     int radioSelectCode = 1;
-    private GeneralAccountEntry selectedGenAcct = new GeneralAccountEntry();
-    private AccountEntry selectedSoftAcct = new AccountEntry();
+    private FinancialApp.Data.GeneralAccountEntry selectedGenAcct = new FinancialApp.Data.GeneralAccountEntry();
+    private FinancialApp.Data.AccountEntry selectedSoftAcct = new FinancialApp.Data.AccountEntry();
     public ListingsResponse listing = new ListingsResponse();
-    public EventEntry[] eventEntries;
+    public FinancialApp.Data.EventEntry[] eventEntries;
 
 
     protected override async Task OnInitializedAsync()
@@ -234,7 +235,7 @@
     public void SetGeneralAccount(String selectedID)
     {
 
-        foreach (GeneralAccountEntry GenAccount in listing.GeneralAccountEntries)
+        foreach (FinancialApp.Data.GeneralAccountEntry GenAccount in listing.GeneralAccountEntries)
         {
             if (GenAccount.Id == selectedID)
             {
@@ -249,7 +250,7 @@
     public void SetSoftAccount(String selectedID, bool trans)
     {
 
-        foreach (AccountEntry softAccount in selectedGenAcct.SoftAccountList)
+        foreach (FinancialApp.Data.AccountEntry softAccount in selectedGenAcct.SoftAccountList)
         {
             if (softAccount.Id == selectedID)
             {
