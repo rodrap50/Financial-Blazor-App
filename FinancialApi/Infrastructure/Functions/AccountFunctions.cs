@@ -1,62 +1,69 @@
-﻿using Microsoft.Azure.WebJobs;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Json;
 
 
 namespace Financial.Api.Infrastructure.Controllers;
-using Data;
+using Financial.Shared;
 using Infrastructure;
 using Microsoft.Azure.Functions.Worker;
 using System;
 
+// Functions must return IActionResult under the ASP.NET Core integration model; a bare POCO
+// return value is not written to the HTTP response body.
 public class AccountFunctions(IAccountService accountService)
 {
     [Function("GetAllAccounts")]
-    public async Task<IEnumerable<Account>> GetAllAccounts([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req)
+    public async Task<IActionResult> GetAllAccounts([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req)
     {
-        return await accountService.GetAllAccountsAsync();
+        return new OkObjectResult(await accountService.GetAllAccountsAsync());
     }
 
     [Function("GetAccountById")]
-    public async Task<Account> GetAccountById([HttpTrigger(AuthorizationLevel.Function, "get", Route = "account/{accountId}")] HttpRequest req, string accountId)
+    public async Task<IActionResult> GetAccountById([HttpTrigger(AuthorizationLevel.Function, "get", Route = "account/{accountId}")] HttpRequest req, string accountId)
     {
-        return await accountService.GetAccountByIdAsync(Guid.Parse(accountId));
+        var account = await accountService.GetAccountByIdAsync(Guid.Parse(accountId));
+        return account is null ? new NotFoundResult() : new OkObjectResult(account);
     }
     [Function("CreateAccount")]
-    public async Task<Account> CreateAccount([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req)
+    public async Task<IActionResult> CreateAccount([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req)
     {
-        //var body = await req.ReadAsStringAsync();
         var account = await req.ReadFromJsonAsync<Account>();
-        //var account = JsonSerializer.Deserialize<Account>(body);
-        return await accountService.CreateAccountAsync(account);
+        if (account is null)
+        {
+            return new BadRequestObjectResult("Request body must be an account.");
+        }
+        var created = await accountService.CreateAccountAsync(account);
+        return new CreatedResult($"account/{created.Id}", created);
     }
     [Function("UpdateAccount")]
-    public async Task<Account> UpdateAccount([HttpTrigger(AuthorizationLevel.Function, "put", Route = "account/{accountId}")] HttpRequest req, string accountId)
+    public async Task<IActionResult> UpdateAccount([HttpTrigger(AuthorizationLevel.Function, "put", Route = "account/{accountId}")] HttpRequest req, string accountId)
     {
-        //var body = await req.ReadAsStringAsync();
-        //var account = JsonSerializer.Deserialize<Account>(body);
         var account = await req.ReadFromJsonAsync<Account>();
-        if (accountService.AccountExistsAsync(Guid.Parse(accountId)).Result == false)
+        if (account is null)
         {
-            throw new ArgumentException("Account does not exist.", nameof(accountId));
+            return new BadRequestObjectResult("Request body must be an account.");
         }
-        return await accountService.UpdateAccountAsync(account);
+        if (!await accountService.AccountExistsAsync(Guid.Parse(accountId)))
+        {
+            return new NotFoundResult();
+        }
+        return new OkObjectResult(await accountService.UpdateAccountAsync(account));
     }
     [Function("DeleteAccount")]
-    public async Task<bool> DeleteAccount([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "account/{accountId}")] HttpRequest req, string accountId)
+    public async Task<IActionResult> DeleteAccount([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "account/{accountId}")] HttpRequest req, string accountId)
     {
-        if (accountService.AccountExistsAsync(Guid.Parse(accountId)).Result == false)
+        if (!await accountService.AccountExistsAsync(Guid.Parse(accountId)))
         {
-            throw new ArgumentException("Account does not exist.", nameof(accountId));
+            return new NotFoundResult();
         }
-        return await accountService.DeleteAccountAsync(Guid.Parse(accountId));
+        return new OkObjectResult(await accountService.DeleteAccountAsync(Guid.Parse(accountId)));
     }
     [Function("DeleteAllAccounts")]
-    public async Task<bool> DeleteAllAccounts([HttpTrigger(AuthorizationLevel.Function, "delete", Route = null)] HttpRequest req)
+    public async Task<IActionResult> DeleteAllAccounts([HttpTrigger(AuthorizationLevel.Function, "delete", Route = null)] HttpRequest req)
     {
-        return await accountService.DeleteAllAccounts();
+        return new OkObjectResult(await accountService.DeleteAllAccounts());
     }
 
 }

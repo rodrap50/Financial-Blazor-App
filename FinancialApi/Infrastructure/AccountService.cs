@@ -1,6 +1,6 @@
 ﻿using Financial.Api.Data;
+using Financial.Shared;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,14 +11,18 @@ using System.Threading.Tasks;
 namespace Financial.Api.Infrastructure;
 public class AccountService(CosmosDbContext _context) : IAccountService
 {
+    // FirstOrDefault rather than Any: EF Core's Any() emits a SELECT VALUE EXISTS subquery that the
+    // Docker (vNext) Cosmos emulator rejects. AsNoTracking so a later Update() of the same key doesn't
+    // collide with a tracked instance.
     public async Task<bool> AccountExistsAsync(Guid accountId)
     {
-        return await _context.Accounts.AnyAsync(a => a.Id == accountId.ToString());
+        var id = accountId.ToString();
+        return await _context.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.Id == id) is not null;
     }
 
     public async Task<bool> AccountExistsByNameAsync(string accountName)
     {
-        return await _context.Accounts.AnyAsync(a => a.AccountName == accountName);
+        return await _context.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.AccountName == accountName) is not null;
     }
 
     public async Task<Account> CreateAccountAsync(Account account)
@@ -35,7 +39,7 @@ public class AccountService(CosmosDbContext _context) : IAccountService
 
     public async Task<bool> DeleteAccountAsync(Guid accountId)
     {
-        var product = await _context.Accounts.FindAsync(accountId);
+        var product = await _context.Accounts.FindAsync(accountId.ToString());
         if(product is not null)
         {
             _context.Accounts.Remove(product);
@@ -56,7 +60,7 @@ public class AccountService(CosmosDbContext _context) : IAccountService
 
     public async Task<Account> GetAccountByIdAsync(Guid accountId)
     {
-        return await _context.Accounts.FindAsync(accountId);
+        return await _context.Accounts.FindAsync(accountId.ToString());
     }
 
     public async Task<IEnumerable<Account>> GetAllAccountsAsync()
@@ -66,6 +70,8 @@ public class AccountService(CosmosDbContext _context) : IAccountService
 
     public async Task<Account> UpdateAccountAsync(Account account)
     {
-        throw new NotImplementedException();
+        _context.Accounts.Update(account);
+        await _context.SaveChangesAsync();
+        return account;
     }
 }
