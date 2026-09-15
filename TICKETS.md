@@ -12,31 +12,12 @@
 
 | # | Ticket | Status | Blocked By |
 |---|---|---|---|
-| T01 | Add Events and Transactions to CosmosDbContext | 🔲 Pending | — |
-| T02 | Add IEventService and EventService | 🔲 Pending | T01 |
+| T01 | Add Events and Transactions to CosmosDbContext | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t01--add-events-and-transactions-to-cosmosdbcontext) | — |
+| T02 | Add IEventService and EventService | 🔲 Pending | — |
 | T03 | Add EventFunctions HTTP triggers | 🔲 Pending | T02 |
-| T04 | Add ITransactionService and TransactionService | 🔲 Pending | T01 |
+| T04 | Add ITransactionService and TransactionService | 🔲 Pending | — |
 | T05 | Add TransactionFunctions HTTP triggers | 🔲 Pending | T04 |
 | T06 | Wire DatabaseInitializer to API startup | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t06--wire-databaseinitializer-to-api-startup) | — |
-
----
-
-### T01 — Add Events and Transactions to CosmosDbContext
-
-**File:** `FinancialApi/Data/CosmoDbContext.cs`
-
-**Status:** 🔲 Pending
-**Blocked by:** None — ready to start
-
-**Goal:** Extend `CosmosDbContext` so EF Core knows about `FinancialEvent` and `Transaction`,
-mirroring the existing `Accounts` container configuration.
-
-**Acceptance criteria:**
-- `DbSet<FinancialEvent> Events` property added to `CosmosDbContext`
-- `DbSet<Transaction> Transactions` property added to `CosmosDbContext`
-- `OnModelCreating` maps each to its own named Cosmos container with a partition key and primary key
-  configured (container names and partition key properties match the domain model)
-- `dotnet build FinancialApi.sln` passes with no new errors
 
 ---
 
@@ -45,7 +26,7 @@ mirroring the existing `Accounts` container configuration.
 **Files:** `FinancialApi/Infrastructure/IEventService.cs`, `FinancialApi/Infrastructure/EventService.cs`, `FinancialApi/Infrastructure/Startup/ApplicationServiceStartup.cs`
 
 **Status:** 🔲 Pending
-**Blocked by:** T01
+**Blocked by:** None — ready to start (T01 done)
 
 **Goal:** Implement the full CRUD service layer for `FinancialEvent`, following the pattern of
 `IAccountService` / `AccountService`.
@@ -85,7 +66,7 @@ pattern of `AccountFunctions`.
 **Files:** `FinancialApi/Infrastructure/ITransactionService.cs`, `FinancialApi/Infrastructure/TransactionService.cs`, `FinancialApi/Infrastructure/Startup/ApplicationServiceStartup.cs`
 
 **Status:** 🔲 Pending
-**Blocked by:** T01
+**Blocked by:** None — ready to start (T01 done)
 
 **Goal:** Implement the full service layer for `Transaction`, including side-effect logic to keep
 account balances consistent when a transaction is created or modified.

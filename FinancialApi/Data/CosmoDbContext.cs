@@ -1,3 +1,4 @@
+using Financial.Api.Data.Configuration;
 using Microsoft.EntityFrameworkCore;
 namespace Financial.Api.Data;
 using Financial.Shared;
@@ -10,12 +11,14 @@ public class CosmosDbContext : DbContext
     {
     }
     public DbSet<Account> Accounts { get; set; }
+    public DbSet<FinancialEvent> Events { get; set; }
+    public DbSet<Transaction> Transactions { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Account>()
-            .ToContainer("Accounts")
-            .HasPartitionKey(a => a.RecordCode)
-            .HasKey(a => a.Id);
+        modelBuilder.ApplyConfiguration(new AccountConfiguration());
+        modelBuilder.ApplyConfiguration(new FinancialEventConfiguration());
+        modelBuilder.ApplyConfiguration(new TransactionConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }
