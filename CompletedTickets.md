@@ -15,10 +15,44 @@ appropriate epic/sprint heading, and record it in the log below.
 |---|---|---|---|
 | T06 | Wire DatabaseInitializer to API startup | 2026-09-15 | Done as part of the .NET 10 / Functions prototype (MODERNIZATION.md "Prototype verified") |
 | T01 | Add Events and Transactions to CosmosDbContext | 2026-09-15 | Mappings extracted into per-entity `IEntityTypeConfiguration` classes |
+| T02 | Add IEventService and EventService | 2026-09-15 | Introduced `NotFoundException` / `ConflictException` for service-layer error signalling |
 
 ---
 
 ## Sprint 1 — API Layer
+
+### T02 — Add IEventService and EventService
+
+**Completed:** 2026-09-15
+
+**Summary:** `IEventService` / `EventService` added under `FinancialApi/Infrastructure/` with all six
+methods (`CreateEventAsync`, `GetEventByIdAsync`, `GetAllEventsAsync`, `UpdateEventAsync`,
+`DeleteEventAsync`, `EventExistsAsync`) backed by `CosmosDbContext.Events`. Registered as scoped in
+`ApplicationServiceStartup`. Existence checks use `FirstOrDefaultAsync` rather than `AnyAsync` (the
+Docker vNext emulator rejects the `SELECT VALUE EXISTS` that `Any()` emits — same as `AccountService`).
+`UpdateEventAsync` pins the entity `Id` to the route id. Deviations: unlike `AccountService` (which
+returns `null`/`false`), `EventService` signals errors by throwing `NotFoundException` /
+`ConflictException` (new, in `Infrastructure/Exceptions/`) so HTTP triggers can map them to 404/409;
+T04 should follow the same convention. Build passes with 0 warnings / 0 errors.
+
+**Original ticket detail:**
+
+**Files:** `FinancialApi/Infrastructure/IEventService.cs`, `FinancialApi/Infrastructure/EventService.cs`, `FinancialApi/Infrastructure/Startup/ApplicationServiceStartup.cs`
+
+**Status:** 🔲 Pending
+**Blocked by:** T01
+
+**Goal:** Implement the full CRUD service layer for `FinancialEvent`, following the pattern of
+`IAccountService` / `AccountService`.
+
+**Acceptance criteria:**
+- `IEventService` declares: `CreateEventAsync`, `GetEventByIdAsync`, `GetAllEventsAsync`,
+  `UpdateEventAsync`, `DeleteEventAsync`, `EventExistsAsync`
+- `EventService` implements all six methods using `CosmosDbContext`
+- `EventService` is registered in `ApplicationServiceStartup` as `IEventService`
+- `dotnet build FinancialApi.sln` passes with no new errors
+
+---
 
 ### T01 — Add Events and Transactions to CosmosDbContext
 

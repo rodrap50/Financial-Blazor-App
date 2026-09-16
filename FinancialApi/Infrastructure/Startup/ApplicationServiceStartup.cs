@@ -31,7 +31,8 @@ public static class ApplicationServiceStartup
     public static IServiceCollection AddServices(this IServiceCollection service)
     {
         service.AddScoped<IDatabaseInitializer, DatabaseInitializer>()
-        .AddScoped<IAccountService, AccountService>();
+        .AddScoped<IAccountService, AccountService>()
+        .AddScoped<IEventService, EventService>();
 
         service.AddLogging(logBuilder => { logBuilder.AddSerilog(LoggerSetup()); });
 

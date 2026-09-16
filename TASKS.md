@@ -14,8 +14,8 @@
 | # | Task | Status | Summary | Blocked By |
 |---|---|---|---|---|
 | T01 | Add Events and Transactions to CosmosDbContext | ✅ Done | `Events`/`Transactions` DbSets added; mappings moved into `IEntityTypeConfiguration` classes under `Data/Configuration/`. Done 2026-09-15. | — |
-| T02 | Add IEventService and EventService | 🔲 Pending | Full CRUD service layer for `FinancialEvent` | — |
-| T03 | Add EventFunctions HTTP triggers | 🔲 Pending | Expose event CRUD as Azure Functions HTTP triggers | T02 |
+| T02 | Add IEventService and EventService | ✅ Done | Full CRUD service layer for `FinancialEvent`; throws `NotFoundException`/`ConflictException` for T03 to map to 404/409. Done 2026-09-15. | — |
+| T03 | Add EventFunctions HTTP triggers | 🔲 Pending | Expose event CRUD as Azure Functions HTTP triggers | — |
 | T04 | Add ITransactionService and TransactionService | 🔲 Pending | Transaction service layer, including account balance updates | — |
 | T05 | Add TransactionFunctions HTTP triggers | 🔲 Pending | Expose transaction CRUD/queries as HTTP triggers | T04 |
 | T06 | Wire DatabaseInitializer to API startup | ✅ Done | Called in `Program.cs` after `Build()`; logs + rethrows on failure. Done 2026-09-15 during the .NET 10 prototype (see MODERNIZATION.md). | — |

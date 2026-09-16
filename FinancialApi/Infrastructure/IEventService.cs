@@ -7,6 +7,10 @@ namespace Financial.Api.Infrastructure;
 
 public interface IEventService
 {
-    Task<List<FinancialEvent>> GetEventAsync();
-    Task<FinancialEvent> GetEventAsync(Guid id);
+    Task<bool> EventExistsAsync(string id);
+    Task<List<FinancialEvent>> GetAllEventsAsync();
+    Task<FinancialEvent> GetEventByIdAsync(Guid id);
+    Task<FinancialEvent> CreateEventAsync(FinancialEvent newEvent);
+    Task<FinancialEvent> UpdateEventAsync(Guid id, FinancialEvent updatedEvent);
+    Task DeleteEventAsync(Guid id);
 }

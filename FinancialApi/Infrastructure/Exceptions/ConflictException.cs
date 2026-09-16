@@ -1,6 +1,13 @@
+using System;
+
 namespace Financial.Api.Infrastructure.Exceptions;
 
-public class ConflictException
+public class ConflictException: Exception
 {
-    
+    public ConflictException() : base() { }
+
+    public ConflictException(string message) : base(message) { }
+
+    public ConflictException(string message, Exception innerException)
+        : base(message, innerException) { }
 }

@@ -13,30 +13,11 @@
 | # | Ticket | Status | Blocked By |
 |---|---|---|---|
 | T01 | Add Events and Transactions to CosmosDbContext | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t01--add-events-and-transactions-to-cosmosdbcontext) | — |
-| T02 | Add IEventService and EventService | 🔲 Pending | — |
-| T03 | Add EventFunctions HTTP triggers | 🔲 Pending | T02 |
+| T02 | Add IEventService and EventService | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t02--add-ieventservice-and-eventservice) | — |
+| T03 | Add EventFunctions HTTP triggers | 🔲 Pending | — |
 | T04 | Add ITransactionService and TransactionService | 🔲 Pending | — |
 | T05 | Add TransactionFunctions HTTP triggers | 🔲 Pending | T04 |
 | T06 | Wire DatabaseInitializer to API startup | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t06--wire-databaseinitializer-to-api-startup) | — |
-
----
-
-### T02 — Add IEventService and EventService
-
-**Files:** `FinancialApi/Infrastructure/IEventService.cs`, `FinancialApi/Infrastructure/EventService.cs`, `FinancialApi/Infrastructure/Startup/ApplicationServiceStartup.cs`
-
-**Status:** 🔲 Pending
-**Blocked by:** None — ready to start (T01 done)
-
-**Goal:** Implement the full CRUD service layer for `FinancialEvent`, following the pattern of
-`IAccountService` / `AccountService`.
-
-**Acceptance criteria:**
-- `IEventService` declares: `CreateEventAsync`, `GetEventByIdAsync`, `GetAllEventsAsync`,
-  `UpdateEventAsync`, `DeleteEventAsync`, `EventExistsAsync`
-- `EventService` implements all six methods using `CosmosDbContext`
-- `EventService` is registered in `ApplicationServiceStartup` as `IEventService`
-- `dotnet build FinancialApi.sln` passes with no new errors
 
 ---
 
@@ -45,7 +26,8 @@
 **File:** `FinancialApi/Infrastructure/Functions/EventFunctions.cs`
 
 **Status:** 🔲 Pending
-**Blocked by:** T02
+**Blocked by:** None — ready to start (T02 done). `EventService` throws `NotFoundException` /
+`ConflictException` (`Infrastructure/Exceptions/`) — map these to 404 / 409 in the triggers.
 
 **Goal:** Expose `IEventService` operations as Azure Functions v4 HTTP triggers, following the
 pattern of `AccountFunctions`.
