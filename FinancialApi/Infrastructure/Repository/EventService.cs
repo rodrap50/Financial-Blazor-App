@@ -30,8 +30,7 @@ public class EventService (CosmosDbContext context) : IEventService
             .Events
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id.ToString());
-
-        return events;
+        return events ?? throw new NotFoundException("Event not found");
     }
 
     public async Task<FinancialEvent> CreateEventAsync(FinancialEvent newEvent)

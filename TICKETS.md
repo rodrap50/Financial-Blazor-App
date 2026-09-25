@@ -14,32 +14,10 @@
 |---|---|---|---|
 | T01 | Add Events and Transactions to CosmosDbContext | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t01--add-events-and-transactions-to-cosmosdbcontext) | — |
 | T02 | Add IEventService and EventService | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t02--add-ieventservice-and-eventservice) | — |
-| T03 | Add EventFunctions HTTP triggers | 🔲 Pending | — |
+| T03 | Add EventFunctions HTTP triggers | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t03--add-eventfunctions-http-triggers) | — |
 | T04 | Add ITransactionService and TransactionService | 🔲 Pending | — |
 | T05 | Add TransactionFunctions HTTP triggers | 🔲 Pending | T04 |
 | T06 | Wire DatabaseInitializer to API startup | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t06--wire-databaseinitializer-to-api-startup) | — |
-
----
-
-### T03 — Add EventFunctions HTTP triggers
-
-**File:** `FinancialApi/Infrastructure/Functions/EventFunctions.cs`
-
-**Status:** 🔲 Pending
-**Blocked by:** None — ready to start (T02 done). `EventService` throws `NotFoundException` /
-`ConflictException` (`Infrastructure/Exceptions/`) — map these to 404 / 409 in the triggers.
-
-**Goal:** Expose `IEventService` operations as Azure Functions v4 HTTP triggers, following the
-pattern of `AccountFunctions`.
-
-**Acceptance criteria:**
-- Five HTTP triggers implemented: `GetAllEvents`, `GetEventById`, `CreateEvent`, `UpdateEvent`,
-  `DeleteEvent`
-- Routes follow a consistent, lowercase pattern (e.g., `api/events`, `api/events/{id}`)
-- Each trigger returns appropriate HTTP status codes (200, 201, 404, 400) and JSON bodies
-- Functions host starts without error (`func start --no-build` from `FinancialApi/bin/Debug/net10.0/`)
-- All five routes return expected responses when called via curl or a REST client against the local
-  Functions host (Cosmos Emulator must be running for DB-backed assertions)
 
 ---
 
@@ -67,10 +45,12 @@ account balances consistent when a transaction is created or modified.
 
 ### T05 — Add TransactionFunctions HTTP triggers
 
-**File:** `FinancialApi/Infrastructure/Functions/TransactionFunctions.cs`
+**File:** `FinancialApi/Functions/TransactionFunctions.cs`
 
 **Status:** 🔲 Pending
-**Blocked by:** T04
+**Blocked by:** T04. Follow `EventFunctions` (T03): explicit lowercase `Route`, `Guid.TryParse` →
+400, service exceptions mapped to 404 / 409, `Created(uri, value)` for 201 (not `CreatedAtAction`,
+which needs an MVC route table the worker does not have).
 
 **Goal:** Expose `ITransactionService` operations as Azure Functions v4 HTTP triggers.
 
@@ -92,7 +72,7 @@ account balances consistent when a transaction is created or modified.
 |---|---|---|---|
 | T07 | Configure Blazor HttpClient to point at the API | 🔲 Pending | — |
 | T08 | Update Accounts page to correct API routes | 🔲 Pending | T07 |
-| T09 | Build Events page connected to API | 🔲 Pending | T07, T03 |
+| T09 | Build Events page connected to API | 🔲 Pending | T07 |
 | T10 | Build Transactions page connected to API | 🔲 Pending | T07, T05 |
 | T11 | Build NewEntry page connected to API | 🔲 Pending | T07, T05 |
 
@@ -144,7 +124,7 @@ so it actually loads account data in both local dev and production.
 **Files:** `FinancialApp/Pages/Events.razor` (or equivalent list page), `FinancialApp/Pages/EditEvent.razor`
 
 **Status:** 🔲 Pending
-**Blocked by:** T07, T03
+**Blocked by:** T07 (T03 done — live routes are `api/events` and `api/events/{eventId}`)
 
 **Goal:** Events.razor lists all events from the API; EditEvent.razor loads a single event by ID
 and saves changes back via the API.

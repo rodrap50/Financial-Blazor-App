@@ -16,10 +16,61 @@ appropriate epic/sprint heading, and record it in the log below.
 | T06 | Wire DatabaseInitializer to API startup | 2026-09-15 | Done as part of the .NET 10 / Functions prototype (MODERNIZATION.md "Prototype verified") |
 | T01 | Add Events and Transactions to CosmosDbContext | 2026-09-15 | Mappings extracted into per-entity `IEntityTypeConfiguration` classes |
 | T02 | Add IEventService and EventService | 2026-09-15 | Introduced `NotFoundException` / `ConflictException` for service-layer error signalling |
+| T03 | Add EventFunctions HTTP triggers | 2026-09-25 | Function classes moved to `FinancialApi/Functions/`, services to `Infrastructure/Repository/` |
 
 ---
 
 ## Sprint 1 — API Layer
+
+### T03 — Add EventFunctions HTTP triggers
+
+**Completed:** 2026-09-25
+
+**Summary:** `EventFunctions` exposes all five `IEventService` operations as HTTP triggers on
+`api/events` (GET all, POST) and `api/events/{eventId}` (GET, PUT, DELETE). Status codes: 200 on
+read/update/delete, 201 + Location on create, 400 for a malformed id or missing body, 404 from
+`NotFoundException`, 409 from `ConflictException`, 500 otherwise. `GetEventByIdAsync` was changed to
+throw `NotFoundException` rather than return `null`, so all four id-bearing operations signal
+absence the same way. Build passes with 0 errors and the host enumerates all five functions.
+
+**Deviations:** the ticket's file path was `Infrastructure/Functions/EventFunctions.cs`; function
+classes were instead moved up to `FinancialApi/Functions/` (namespace `Financial.Api.Functions`) and
+services down to `Infrastructure/Repository/`, committed separately. `EventFunctions` derives from
+`ControllerBase` for its result helpers, unlike `AccountFunctions`. The redundant
+`AddScoped<AccountFunctions>()` was dropped — the isolated worker activates function classes
+without registration.
+
+**Carried forward:** `AccountFunctions` is still on the old `Route = null` convention
+(`api/GetAllAccounts`, `api/CreateAccount`) and the `Financial.Api.Infrastructure.Controllers`
+namespace — align it during T08. Routes have not been exercised against a live Cosmos emulator;
+the host enumerating them is the only verification done.
+
+**Known pitfalls for T05:** an `[HttpTrigger]` must decorate an `HttpRequest` parameter — decorating
+the route-value `string` instead makes the generated binding bind the request body, so the route
+value never arrives. `CreatedAtAction` resolves its Location through MVC's route table, which the
+worker has none of; use `Created(uri, value)`.
+
+**Original ticket detail:**
+
+**File:** `FinancialApi/Infrastructure/Functions/EventFunctions.cs`
+
+**Status:** 🔲 Pending
+**Blocked by:** None — ready to start (T02 done). `EventService` throws `NotFoundException` /
+`ConflictException` (`Infrastructure/Exceptions/`) — map these to 404 / 409 in the triggers.
+
+**Goal:** Expose `IEventService` operations as Azure Functions v4 HTTP triggers, following the
+pattern of `AccountFunctions`.
+
+**Acceptance criteria:**
+- Five HTTP triggers implemented: `GetAllEvents`, `GetEventById`, `CreateEvent`, `UpdateEvent`,
+  `DeleteEvent`
+- Routes follow a consistent, lowercase pattern (e.g., `api/events`, `api/events/{id}`)
+- Each trigger returns appropriate HTTP status codes (200, 201, 404, 400) and JSON bodies
+- Functions host starts without error (`func start --no-build` from `FinancialApi/bin/Debug/net10.0/`)
+- All five routes return expected responses when called via curl or a REST client against the local
+  Functions host (Cosmos Emulator must be running for DB-backed assertions)
+
+---
 
 ### T02 — Add IEventService and EventService
 
