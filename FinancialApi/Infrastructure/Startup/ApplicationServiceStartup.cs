@@ -70,7 +70,6 @@ public static class ApplicationServiceStartup
         this FunctionsApplicationBuilder builder)
     {
         builder.Services.AddHttpClient();
-        builder.Services.AddScoped<AccountFunctions>();
 
         builder.Services.AddServices();
         return builder;
