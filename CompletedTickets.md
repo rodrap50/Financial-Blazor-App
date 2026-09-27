@@ -40,10 +40,17 @@ services down to `Infrastructure/Repository/`, committed separately. `EventFunct
 `AddScoped<AccountFunctions>()` was dropped — the isolated worker activates function classes
 without registration.
 
+**Verified end-to-end** 2026-09-26 against the Docker vNext emulator (host port 8090 → container
+8081, `CosmosDbConnectionMode=Gateway`): create 201 + Location, list 200, get 200, update 200 and
+persisted, delete 200 then 404, duplicate id 409, unknown id 404, malformed id 400 on all three id
+routes, null body 400 on create and update. No errors in the host log.
+
 **Carried forward:** `AccountFunctions` is still on the old `Route = null` convention
 (`api/GetAllAccounts`, `api/CreateAccount`) and the `Financial.Api.Infrastructure.Controllers`
-namespace — align it during T08. Routes have not been exercised against a live Cosmos emulator;
-the host enumerating them is the only verification done.
+namespace — align it during T08. The create `Location` header is `events/{id}`, missing the `api/`
+prefix, so it does not resolve to the real route — `AccountFunctions` has the same defect; fix both
+together. A `.claude/launch.json` entry named `FinancialApi` runs the host
+(`func start --no-build --script-root FinancialApi/bin/Debug/net10.0`).
 
 **Known pitfalls for T05:** an `[HttpTrigger]` must decorate an `HttpRequest` parameter — decorating
 the route-value `string` instead makes the generated binding bind the request body, so the route
