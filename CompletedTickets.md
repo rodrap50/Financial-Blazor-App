@@ -17,10 +17,104 @@ appropriate epic/sprint heading, and record it in the log below.
 | T01 | Add Events and Transactions to CosmosDbContext | 2026-09-15 | Mappings extracted into per-entity `IEntityTypeConfiguration` classes |
 | T02 | Add IEventService and EventService | 2026-09-15 | Introduced `NotFoundException` / `ConflictException` for service-layer error signalling |
 | T03 | Add EventFunctions HTTP triggers | 2026-09-25 | Function classes moved to `FinancialApi/Functions/`, services to `Infrastructure/Repository/` |
+| T04 | Add ITransactionService and TransactionService | 2026-09-27 | Balances also adjusted on update/delete; save not atomic across containers |
+| T05 | Add TransactionFunctions HTTP triggers | 2026-09-27 | 29/29 end-to-end checks against the emulator; Location has the `api/` prefix |
 
 ---
 
 ## Sprint 1 — API Layer
+
+### T05 — Add TransactionFunctions HTTP triggers
+
+**Completed:** 2026-09-27
+
+**Summary:** `TransactionFunctions` (`FinancialApi/Functions/`) exposes all six `ITransactionService`
+operations: `api/transactions` (POST), `api/transactions/{transactionId}` (GET, PUT, DELETE),
+`api/transactions/account/{accountId}` (GET) and `api/transactions/event/{eventId}` (GET). Follows
+`EventFunctions`: 400 for a malformed id or null body, 404 from `NotFoundException`, 409 from
+`ConflictException`, 500 otherwise, 201 + Location on create. Build passes with 0 errors and the host
+enumerates all six functions.
+
+**Deviations:** create also maps `NotFoundException` to 404 when a referenced account doesn't exist.
+The create `Location` is `api/transactions/{id}` (with the `api/` prefix), so it resolves — Events and
+Accounts still lack the prefix. Update returns the saved transaction rather than echoing the request.
+
+**Verified end-to-end** 2026-09-27 against the Docker vNext emulator with a 29-check script: create
+201 + Location, balance effects for a cash credit and a transfer, duplicate 409, unknown account 404,
+get/by-account/by-event 200, update re-applies balances (amount and direction change) and persists,
+delete reverses balances then 404, malformed id 400 on all five id routes, null body 400 on create and
+update. No errors in the host log; test data cleaned up.
+
+**Carried forward:** fix the missing `api/` prefix in the Events and Accounts `Location` headers so all
+three match. No automated tests in the repo yet (T15).
+
+**Original ticket detail:**
+
+**File:** `FinancialApi/Functions/TransactionFunctions.cs`
+
+**Status:** 🔲 Pending
+**Blocked by:** T04. Follow `EventFunctions` (T03): explicit lowercase `Route`, `Guid.TryParse` →
+400, service exceptions mapped to 404 / 409, `Created(uri, value)` for 201 (not `CreatedAtAction`,
+which needs an MVC route table the worker does not have).
+
+**Goal:** Expose `ITransactionService` operations as Azure Functions v4 HTTP triggers.
+
+**Acceptance criteria:**
+- Six HTTP triggers implemented: `GetTransactionById`, `GetTransactionsByAccount`,
+  `GetTransactionsByEvent`, `CreateTransaction`, `UpdateTransaction`, `DeleteTransaction`
+- Routes follow a consistent, lowercase pattern (e.g., `api/transactions`, `api/transactions/{id}`,
+  `api/transactions/account/{accountId}`, `api/transactions/event/{eventId}`)
+- Each trigger returns appropriate HTTP status codes and JSON bodies
+- Functions host starts without error
+- All six routes return expected responses when called via curl or a REST client against the local
+  Functions host
+
+---
+
+### T04 — Add ITransactionService and TransactionService
+
+**Completed:** 2026-09-27
+
+**Summary:** `ITransactionService` / `TransactionService` in `Infrastructure/Repository/` implement the
+six methods against `CosmosDbContext.Transactions`, registered as scoped in `ApplicationServiceStartup`.
+Follows the T02 convention: `NotFoundException` for a missing transaction or referenced account,
+`ConflictException` for a duplicate id. Create applies the amount to each linked account's balance;
+update reverses the old transaction and applies the new one; delete reverses. Sign rules follow the
+legacy `AddAccountTransaction.js`: a credit adds to the general and "to" accounts and subtracts from
+the "from" account, a debit is the reverse, and transfers leave the general account alone. Build
+passes with 0 errors.
+
+**Deviations:** files landed in `Infrastructure/Repository/` (post-T03 location), not
+`Infrastructure/`. Balance handling on update/delete goes beyond the create-only criterion. The
+account `transactions` ledger and 30-item `transactionSummary` from the legacy procedure were not
+carried over. The transaction and balance changes share one `SaveChanges`, which Cosmos does not run
+atomically across containers (`ponytail:` comment).
+
+**Verified end-to-end** 2026-09-27 through T05's triggers against the Docker vNext emulator: balance
+effects on create (cash credit, transfer), update (amount and direction change) and delete all
+matched the sign rules; duplicate id 409, unknown account 404.
+
+**Original ticket detail:**
+
+**Files:** `FinancialApi/Infrastructure/ITransactionService.cs`, `FinancialApi/Infrastructure/TransactionService.cs`, `FinancialApi/Infrastructure/Startup/ApplicationServiceStartup.cs`
+
+**Status:** 🔲 Pending
+**Blocked by:** None — ready to start (T01 done)
+
+**Goal:** Implement the full service layer for `Transaction`, including side-effect logic to keep
+account balances consistent when a transaction is created or modified.
+
+**Acceptance criteria:**
+- `ITransactionService` declares: `CreateTransactionAsync`, `GetTransactionByIdAsync`,
+  `GetTransactionsByAccountAsync`, `GetTransactionsByEventAsync`, `UpdateTransactionAsync`,
+  `DeleteTransactionAsync`
+- `TransactionService` implements all six methods using `CosmosDbContext`
+- `CreateTransactionAsync` also updates the affected `Account`'s balance (credit/debit applied
+  based on transaction direction)
+- `TransactionService` is registered in `ApplicationServiceStartup` as `ITransactionService`
+- `dotnet build FinancialApi.sln` passes with no new errors
+
+---
 
 ### T03 — Add EventFunctions HTTP triggers
 
