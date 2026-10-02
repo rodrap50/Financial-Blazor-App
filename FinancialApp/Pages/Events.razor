@@ -52,7 +52,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        HttpResponseMessage response = await Http.GetAsync("http://localhost:7071/api/accounts");
+        HttpResponseMessage response = await Http.GetAsync("api/accounts");
         string responseBody = await response.Content.ReadAsStringAsync();
         accounts = JsonConvert.DeserializeObject<AccountListing>(responseBody);
 
@@ -63,7 +63,7 @@ else
 
         EventRequest newEvent = new EventRequest();
         newEvent.EventName = eventname;
-        await Http.PutAsJsonAsync("http://localhost:7071/api/event", newEvent);
+        await Http.PutAsJsonAsync("api/event", newEvent);
         await OnInitializedAsync();
     }
 

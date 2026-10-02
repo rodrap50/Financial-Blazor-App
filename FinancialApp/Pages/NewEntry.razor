@@ -135,7 +135,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        HttpResponseMessage response = await Http.GetAsync("http://localhost:7071/api/accounts");
+        HttpResponseMessage response = await Http.GetAsync("api/accounts");
         string responseBody = await response.Content.ReadAsStringAsync();
         accounts = JsonConvert.DeserializeObject<AccountListing>(responseBody);
 
@@ -144,7 +144,7 @@ else
 
     protected async Task AddTransaction()
     {
-        await Http.PutAsJsonAsync("http://localhost:7071/api/transaction/", Record);
+        await Http.PutAsJsonAsync("api/transaction/", Record);
         navigation.NavigateTo("/NewEntry");
         
     }

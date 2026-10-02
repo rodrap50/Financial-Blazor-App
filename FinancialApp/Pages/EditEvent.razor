@@ -42,14 +42,14 @@ else
 
      protected override async Task OnInitializedAsync()
     {
-        HttpResponseMessage response = await Http.GetAsync("http://localhost:7071/api/event/" + id);
+        HttpResponseMessage response = await Http.GetAsync("api/event/" + id);
         string responseBody = await response.Content.ReadAsStringAsync();
         eventRecord = JsonConvert.DeserializeObject<FinancialEvent>(responseBody);
     }
 
     protected async Task UpdateEvent()
     {
-        await Http.PutAsJsonAsync("http://localhost:7071/api/event/" + id, eventRecord);
+        await Http.PutAsJsonAsync("api/event/" + id, eventRecord);
         navigation.NavigateTo("/events");
     }
 

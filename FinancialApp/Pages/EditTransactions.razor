@@ -186,7 +186,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        HttpResponseMessage response = await Http.GetAsync("http://localhost:7071/api/listings");
+        HttpResponseMessage response = await Http.GetAsync("api/listings");
         string responseBody = await response.Content.ReadAsStringAsync();
         listing = JsonConvert.DeserializeObject<ListingsResponse>(responseBody);
 
@@ -222,7 +222,7 @@
 
     public void SaveTransaction()
     {
-        Http.PutAsJsonAsync("http://localhost:7071/api/transaction", record);
+        Http.PutAsJsonAsync("api/transaction", record);
         //navigation.NavigateTo("/transactions");
     }
 
