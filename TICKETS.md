@@ -25,9 +25,9 @@
 
 | # | Ticket | Status | Blocked By |
 |---|---|---|---|
-| T07 | Configure Blazor HttpClient to point at the API | 🔲 Pending | — |
-| T08 | Update Accounts page to correct API routes | 🔲 Pending | T07 |
-| T09 | Build Events page connected to API | 🔲 Pending | T07 |
+| T07 | Configure Blazor HttpClient to point at the API | 🔍 In Review | — |
+| T08 | Update Accounts page to correct API routes | 🔍 In Review | T07 |
+| T09 | Build Events page connected to API | 🔍 In Review | T07 |
 | T10 | Build Transactions page connected to API | 🔲 Pending | T07 |
 | T11 | Build NewEntry page connected to API | 🔲 Pending | T07 |
 
@@ -37,7 +37,7 @@
 
 **Files:** `FinancialApp/wwwroot/appsettings.json`, `FinancialApp/wwwroot/appsettings.Development.json`, `FinancialApp/Program.cs`
 
-**Status:** 🔲 Pending
+**Status:** 🔍 In Review
 **Blocked by:** None — ready to start
 
 **Goal:** Replace any hardcoded URLs and the bare default `HttpClient` with a properly configured
@@ -58,7 +58,7 @@ client that points at the Azure Functions API in both local dev and production.
 
 **File:** `FinancialApp/Pages/Accounts.razor`
 
-**Status:** 🔲 Pending
+**Status:** 🔍 In Review
 **Blocked by:** T07
 
 **Goal:** Make the Accounts page use the configured API `HttpClient` and correct function route
@@ -78,7 +78,7 @@ so it actually loads account data in both local dev and production.
 
 **Files:** `FinancialApp/Pages/Events.razor` (or equivalent list page), `FinancialApp/Pages/EditEvent.razor`
 
-**Status:** 🔲 Pending
+**Status:** 🔍 In Review
 **Blocked by:** T07 (T03 done — live routes are `api/events` and `api/events/{eventId}`)
 
 **Goal:** Events.razor lists all events from the API; EditEvent.razor loads a single event by ID

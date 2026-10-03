@@ -24,9 +24,9 @@
 
 | # | Task | Status | Summary | Blocked By |
 |---|---|---|---|---|
-| T07 | Configure Blazor HttpClient to point at the API | 🔲 Pending | Configured `HttpClient` with `ApiBaseUrl` for dev and prod | — |
-| T08 | Update Accounts page to correct API routes | 🔲 Pending | Fix Accounts page to use configured client and correct route | T07 |
-| T09 | Build Events page connected to API | 🔲 Pending | Events list + edit pages calling real `EventFunctions` | T07 |
+| T07 | Configure Blazor HttpClient to point at the API | 🔍 In Review | Configured `HttpClient` with `ApiBaseUrl` for dev and prod | — |
+| T08 | Update Accounts page to correct API routes | 🔍 In Review | Fix Accounts page to use configured client and correct route | T07 |
+| T09 | Build Events page connected to API | 🔍 In Review | Events list + edit pages calling real `EventFunctions` | T07 |
 | T10 | Build Transactions page connected to API | 🔲 Pending | Transaction list + edit pages with account/event filtering | T07 |
 | T11 | Build NewEntry page connected to API | 🔲 Pending | NewEntry page posts transactions through the API | T07 |
 
