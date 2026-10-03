@@ -6,11 +6,19 @@
 
 <h3>Accounts</h3>
 
-@if (accounts == null)
+@if (error != null)
+{
+    <div class="alert alert-danger" role="alert">Couldn't load accounts: @error</div>
+}
+else if (accounts == null)
 {
      <div class="spinner-border text-danger" role="status">
         <span class="visually-hidden"></span>
     </div>
+}
+else if (accounts.Count == 0)
+{
+    <p>No accounts yet.</p>
 }
 else
 {
@@ -65,9 +73,18 @@ else
 
 @code {
 private List<Account> accounts;
+private string error;
 
     protected override async Task OnInitializedAsync()
     {
-        accounts = await Http.GetFromJsonAsync<List<Account>>("api/GetAllAccounts");
+        try
+        {
+            accounts = await Http.GetFromJsonAsync<List<Account>>("api/GetAllAccounts") ?? new();
+        }
+        catch (Exception ex)
+        {
+            // Unreachable host, non-2xx status, or a body that isn't an account list.
+            error = ex.Message;
+        }
     }
 }
