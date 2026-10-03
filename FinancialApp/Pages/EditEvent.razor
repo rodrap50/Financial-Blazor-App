@@ -1,34 +1,41 @@
-﻿@using System.Net.Http.Json
+@page "/event"
 @page "/event/{id}"
-@using FinancialApp.Data
+@using System.Net.Http.Json
 @using Financial.Shared
-@using Newtonsoft.Json
 @inject HttpClient Http
 @inject Microsoft.AspNetCore.Components.NavigationManager navigation
 
-<h3>Edit</h3>
+<h3>@(id == null ? "New Event" : "Edit")</h3>
 
-@if (eventRecord == null)
+@if (error != null)
 {
-     <div class="spinner-border text-danger" role="status">
+    <div class="alert alert-danger" role="alert">@error</div>
+}
+
+@if (eventRecord == null && error == null)
+{
+    <div class="spinner-border text-danger" role="status">
         <span class="visually-hidden"></span>
     </div>
 }
-else
+else if (eventRecord != null)
 {
 <div class="row">
     <div class="col-md-4">
         <form>
+            @if (id != null)
+            {
              <div class="form-group">
                 <label asp-for="EventNumber" class="control-label">Event Number</label>
                 <label for="EventNumber" class="form-control">@eventRecord.RecordId</label>
             </div>
+            }
             <div class="form-group">
                 <label for="Name" class="control-label">Name</label>
                 <input for="Name" class="form-control" @bind="@eventRecord.EventName" />
             </div>
         </form>
-        <button @onclick="@(async () => await UpdateEvent())" class="btn btn-default">Save</button>
+        <button @onclick="@SaveEvent" class="btn btn-default">Save</button>
         <button @onclick="@cancel" class="btn">Cancel</button>
     </div>
 </div>
@@ -39,24 +46,49 @@ else
     public string id { get; set; }
 
     private FinancialEvent eventRecord;
+    private string error;
 
-     protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        HttpResponseMessage response = await Http.GetAsync("api/event/" + id);
-        string responseBody = await response.Content.ReadAsStringAsync();
-        eventRecord = JsonConvert.DeserializeObject<FinancialEvent>(responseBody);
+        if (id == null)
+        {
+            eventRecord = new FinancialEvent();
+            return;
+        }
+        try
+        {
+            eventRecord = await Http.GetFromJsonAsync<FinancialEvent>("api/events/" + id);
+        }
+        catch (Exception ex)
+        {
+            // Unreachable host, 400/404/500, or a body that isn't an event.
+            error = "Couldn't load event: " + ex.Message;
+        }
     }
 
-    protected async Task UpdateEvent()
+    protected async Task SaveEvent()
     {
-        await Http.PutAsJsonAsync("api/event/" + id, eventRecord);
-        navigation.NavigateTo("/events");
+        error = null;
+        try
+        {
+            var response = id == null
+                ? await Http.PostAsJsonAsync("api/events", eventRecord)
+                : await Http.PutAsJsonAsync("api/events/" + id, eventRecord);
+            if (!response.IsSuccessStatusCode)
+            {
+                error = $"Couldn't save event: {(int)response.StatusCode} {await response.Content.ReadAsStringAsync()}";
+                return;
+            }
+            navigation.NavigateTo("/events");
+        }
+        catch (Exception ex)
+        {
+            error = "Couldn't save event: " + ex.Message;
+        }
     }
 
     void cancel()
     {
         navigation.NavigateTo("/events");
-
     }
-
 }
