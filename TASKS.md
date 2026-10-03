@@ -45,8 +45,9 @@ Full detail for T01-T11: [TICKETS.md](TICKETS.md#sprint-1--api-layer-tickets)
 | T13 | Decide scope and timing for the Events/Transactions backend | 🔲 Pending | Decision checkpoint on whether/when T01-T05 proceed as scoped | — |
 | T14 | Provision Azure resources and deployment workflow | 🔲 Pending | Stand up SWA + Cosmos Serverless + GitHub Actions deploy (ROADMAP Phase 3) | — |
 | T15 | Add test coverage and CI | 🔲 Pending | Unit/integration tests and a CI build+test step (ROADMAP Phase 4) | — |
+| T16 | Centralize Blazor error handling | 🔲 Pending | Replace per-page try/catch + `error` fields with one global error mechanism | — |
 
-Full detail for T12-T15: [TICKETS.md](TICKETS.md#modernization-next-steps-tickets)
+Full detail for T12-T16: [TICKETS.md](TICKETS.md#modernization-next-steps-tickets)
 
 ---
 
