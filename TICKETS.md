@@ -15,54 +15,9 @@
 | T01 | Add Events and Transactions to CosmosDbContext | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t01--add-events-and-transactions-to-cosmosdbcontext) | — |
 | T02 | Add IEventService and EventService | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t02--add-ieventservice-and-eventservice) | — |
 | T03 | Add EventFunctions HTTP triggers | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t03--add-eventfunctions-http-triggers) | — |
-| T04 | Add ITransactionService and TransactionService | 🔲 Pending | — |
-| T05 | Add TransactionFunctions HTTP triggers | 🔲 Pending | T04 |
+| T04 | Add ITransactionService and TransactionService | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t04--add-itransactionservice-and-transactionservice) | — |
+| T05 | Add TransactionFunctions HTTP triggers | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t05--add-transactionfunctions-http-triggers) | — |
 | T06 | Wire DatabaseInitializer to API startup | ✅ Done — moved to [CompletedTickets.md](CompletedTickets.md#t06--wire-databaseinitializer-to-api-startup) | — |
-
----
-
-### T04 — Add ITransactionService and TransactionService
-
-**Files:** `FinancialApi/Infrastructure/ITransactionService.cs`, `FinancialApi/Infrastructure/TransactionService.cs`, `FinancialApi/Infrastructure/Startup/ApplicationServiceStartup.cs`
-
-**Status:** 🔲 Pending
-**Blocked by:** None — ready to start (T01 done)
-
-**Goal:** Implement the full service layer for `Transaction`, including side-effect logic to keep
-account balances consistent when a transaction is created or modified.
-
-**Acceptance criteria:**
-- `ITransactionService` declares: `CreateTransactionAsync`, `GetTransactionByIdAsync`,
-  `GetTransactionsByAccountAsync`, `GetTransactionsByEventAsync`, `UpdateTransactionAsync`,
-  `DeleteTransactionAsync`
-- `TransactionService` implements all six methods using `CosmosDbContext`
-- `CreateTransactionAsync` also updates the affected `Account`'s balance (credit/debit applied
-  based on transaction direction)
-- `TransactionService` is registered in `ApplicationServiceStartup` as `ITransactionService`
-- `dotnet build FinancialApi.sln` passes with no new errors
-
----
-
-### T05 — Add TransactionFunctions HTTP triggers
-
-**File:** `FinancialApi/Functions/TransactionFunctions.cs`
-
-**Status:** 🔲 Pending
-**Blocked by:** T04. Follow `EventFunctions` (T03): explicit lowercase `Route`, `Guid.TryParse` →
-400, service exceptions mapped to 404 / 409, `Created(uri, value)` for 201 (not `CreatedAtAction`,
-which needs an MVC route table the worker does not have).
-
-**Goal:** Expose `ITransactionService` operations as Azure Functions v4 HTTP triggers.
-
-**Acceptance criteria:**
-- Six HTTP triggers implemented: `GetTransactionById`, `GetTransactionsByAccount`,
-  `GetTransactionsByEvent`, `CreateTransaction`, `UpdateTransaction`, `DeleteTransaction`
-- Routes follow a consistent, lowercase pattern (e.g., `api/transactions`, `api/transactions/{id}`,
-  `api/transactions/account/{accountId}`, `api/transactions/event/{eventId}`)
-- Each trigger returns appropriate HTTP status codes and JSON bodies
-- Functions host starts without error
-- All six routes return expected responses when called via curl or a REST client against the local
-  Functions host
 
 ---
 
@@ -73,8 +28,8 @@ which needs an MVC route table the worker does not have).
 | T07 | Configure Blazor HttpClient to point at the API | 🔲 Pending | — |
 | T08 | Update Accounts page to correct API routes | 🔲 Pending | T07 |
 | T09 | Build Events page connected to API | 🔲 Pending | T07 |
-| T10 | Build Transactions page connected to API | 🔲 Pending | T07, T05 |
-| T11 | Build NewEntry page connected to API | 🔲 Pending | T07, T05 |
+| T10 | Build Transactions page connected to API | 🔲 Pending | T07 |
+| T11 | Build NewEntry page connected to API | 🔲 Pending | T07 |
 
 ---
 
@@ -144,7 +99,8 @@ and saves changes back via the API.
 **Files:** `FinancialApp/Pages/EditTransactions.razor` (and list page if separate)
 
 **Status:** 🔲 Pending
-**Blocked by:** T07, T05
+**Blocked by:** T07 (T05 done — live routes are `api/transactions`, `api/transactions/{transactionId}`,
+`api/transactions/account/{accountId}`, `api/transactions/event/{eventId}`)
 
 **Goal:** Transaction pages load and display transactions from the API, with filtering support by
 account or event.
@@ -164,7 +120,7 @@ account or event.
 **File:** `FinancialApp/Pages/NewEntry.razor`
 
 **Status:** 🔲 Pending
-**Blocked by:** T07, T05
+**Blocked by:** T07 (T05 done — posts to `api/transactions`)
 
 **Goal:** NewEntry.razor submits a new transaction through the API with all required fields.
 
@@ -276,5 +232,6 @@ Cosmos DB in Serverless capacity mode) and a deploy workflow, once ready to go b
 |---|---|
 | 🔲 Pending | Not started |
 | 🔄 In Progress | Actively being built |
+| 🔍 In Review | Built, awaiting review |
 | ✅ Done | Complete |
 | ⏸ Deferred | Moved to post-MVP |
