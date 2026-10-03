@@ -148,6 +148,7 @@ account or event.
 | T13 | Decide scope and timing for the Events/Transactions backend | 🔲 Pending | — |
 | T14 | Provision Azure resources and deployment workflow | 🔲 Pending | — |
 | T15 | Add test coverage and CI | 🔲 Pending | — |
+| T16 | Centralize Blazor error handling | 🔲 Pending | — |
 
 ---
 
@@ -223,6 +224,34 @@ Cosmos DB in Serverless capacity mode) and a deploy workflow, once ready to go b
   once built)
 - At least one integration or smoke test exists for a key HTTP trigger
 - A CI workflow (GitHub Actions) runs build + test on pull request
+
+---
+
+### T16 — Centralize Blazor error handling
+
+**Files:** `FinancialApp/Shared/MainLayout.razor` (or `App.razor`), `FinancialApp/Program.cs`, and the
+pages that currently catch API errors themselves
+(`Accounts.razor`, `Events.razor`, `EditEvent.razor`, and later `EditTransactions.razor` / `NewEntry.razor`)
+
+**Status:** 🔲 Pending
+**Blocked by:** None — ready to start. Best done once T10/T11 land, so every page that calls the API
+can be moved over in one pass.
+
+**Goal:** T08 and T09 handle API failures page by page: each page wraps its calls in
+`try/catch (Exception)`, keeps its own `error` string, and renders its own `alert-danger`. That
+pattern will be copied into every new page. Replace it with one app-wide mechanism, so a failed API
+call is reported in a consistent place and pages only contain their happy path.
+
+**Acceptance criteria:**
+- One shared mechanism (e.g. a scoped error service read by `MainLayout`, a `DelegatingHandler` on the
+  API `HttpClient`, an `<ErrorBoundary>`, or a combination) handles and displays API failures
+- The message is consistent across pages and includes the status code / server message for non-2xx
+  responses
+- Pages no longer declare their own `error` field or catch-all `try/catch` around API calls
+- A failed save still leaves the user on the form with their input intact (the current EditEvent
+  behaviour)
+- Unhandled render exceptions no longer fall through to the default Blazor "An unhandled error has
+  occurred" bar without a useful message
 
 ---
 
