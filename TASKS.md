@@ -27,7 +27,7 @@
 | T07 | Configure Blazor HttpClient to point at the API | 🔍 In Review | Configured `HttpClient` with `ApiBaseUrl` for dev and prod | — |
 | T08 | Update Accounts page to correct API routes | 🔍 In Review | Fix Accounts page to use configured client and correct route | T07 |
 | T09 | Build Events page connected to API | 🔍 In Review | Events list + edit pages calling real `EventFunctions` | T07 |
-| T10 | Build Transactions page connected to API | 🔲 Pending | Transaction list + edit pages with account/event filtering | T07 |
+| T10 | Build Transactions page connected to API | 🔍 In Review | Transaction list + edit pages with account/event filtering | T07 |
 | T11 | Build NewEntry page connected to API | 🔲 Pending | NewEntry page posts transactions through the API | T07 |
 
 Full detail for T01-T11: [TICKETS.md](TICKETS.md#sprint-1--api-layer-tickets)
