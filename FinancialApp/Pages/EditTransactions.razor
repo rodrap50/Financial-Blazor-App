@@ -1,276 +1,191 @@
-@page "/EditTransactions"
-@inject IJSRuntime JSRuntime
+@page "/transactions/{id}"
 @using System.Net.Http.Json
-@using FinancialApp.Data
 @using Financial.Shared
-@using Newtonsoft.Json
 @inject HttpClient Http
-@inject Microsoft.AspNetCore.Components.NavigationManager navigation
-@inject NavigationManager NavigationManager
+@inject NavigationManager navigation
 
-<h3>New Transaction</h3>
+<h3>Edit Transaction</h3>
 
-
-<!--
+@if (error != null)
 {
-	"fromAccountId": "832b6e42-2234-49a7-a080-c1ed7d385ec9",
-	"toAccountId": "05711234-8cff-4a92-853b-07cfd9b603a0",
-	"generalAccountId": "7eb2e298-ff90-4e84-ba8d-a13c08aa7302",
-	"eventId": "7eb2e298-ff90-4e84-ba8d-a13c08aa7302",
-	"dateIncurred": "12/31/2020",
-	"description": "New Transaction 23",
-	"direction": "credit",
-	"amount": 5.00,
-	"checkNumber": "",
-	"digitalPaymentInfo": "",
-	"transactionMethod": "cash"	
+    <div class="alert alert-danger" role="alert">@error</div>
 }
 
-    -->
-
-<div class="container-fluid">
-    @if (listing.GeneralAccountEntries == null)
-    {
-        <div class="spinner-border text-danger" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-
-    }
-    else
-    {
-        <div class="row">
-            <div class="col-md-4">
-                <form>
-                    <div class="form-group">
-                        
-                        @if(listing.GeneralAccountEntries.Length > 1){
-                        
-                        <SelectSearch SelectSearchLabel="General Account"
-                                        Items="@listing.GeneralAccountEntries"
-                                        @bind-SelectedItemKey="record.GeneralAccountId">
-                                        
-                        </SelectSearch>
-                        }
-                        else{
-                            record.GeneralAccountId = listing.GeneralAccountEntries[0].Id;
-                            <label for="General Account" class="contrl-label"></label>
-                        }
-
-
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="dateIncurred" class="control-label">Date Incurred</label>
-                        <input for="dateIncurred" class="form-control" type="date" @bind="@record.DateIncurred" />
-                    </div>
-
-                    <div class="form-group">
-
-                        <label asp-for="softAcccountId" class="control-label">Account Transaction : </label>
-
-                        <input for="softAccountId" list="softAccountSel" class="form-control"
-                        placeholder="Select Account..."
-                        @onchange="@((args) => SetSoftAccount(args.Value.ToString(), false))" />
-
-                        <datalist id="softAccountSel">
-                            @foreach (var SoftAccount in selectedGenAcct.SoftAccountList)
-                            {
-                                <option value="@SoftAccount.Id">@SoftAccount.AccountName</option>
-                            }
-                        </datalist>
-                    </div>
-
-                    <div class="form-group">
-                        <SelectSearch SelectSearchLabel="Event" Items="@eventEntries"
-                        @bind-SelectedItemKey="record.EventId">
-                        </SelectSearch>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="direction" class="control-label">Direction: @record.Direction </label>
-                        <EditForm Model="@record">
-                            <InputRadioGroup @bind-Value="record.Direction">
-                                @foreach (var item in Enum.GetValues(typeof(DebitCreditType)))
-                                {
-                                    <label for="@item" class="control-label">@item</label>
-                                    <InputRadio Value="@item" class="custom-radio" id="@item" />
-
-                                }
-                            </InputRadioGroup>
-                        </EditForm>
-                    </div>
-
-                    <div class="container-fluid">
-                        <div class="row align-items-start">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="transactionMethod" class="control-label">Transaction Method:
-                                        @record.TransactionMethod</label>
-                                    <div class="list-group">
-                                        <EditForm Model="@record">
-                                            <InputRadioGroup @bind-Value="record.TransactionMethod" id="transactionMethod">
-                                                @foreach (var item in Enum.GetValues(typeof(TransactionType)))
-                                                {
-                                                    <label for="@item" class="list-group-item list-group-item-action">
-                                                        <div class="custom-control custom-radio custom-control-inline">
-
-                                                            <InputRadio Value="@item" id="@item" class="custom-control-input"
-                                                        visable="false" />
-                                                            @item
-                                                        </div>
-                                                    </label>
-                                                }
-                                            </InputRadioGroup>
-                                        </EditForm>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 offset-md-7">
-                                @if (record.TransactionMethod == (TransactionType)TransactionType.Transfer)
-                                {
-                                    <div class="form-group-">
-
-                                        <label asp-for="softAcccountId" class="control-label">Account to Tansfer To : </label>
-
-                                        <input for="softAccountId" list="softAccountSel" class="form-control"
-                                    placeholder="Select Account..."
-                                    @onchange="@((args) => SetSoftAccount(args.Value.ToString(), true))" />
-
-                                        <datalist id="softAccountSel">
-                                            @foreach (var SoftAccount in selectedGenAcct.SoftAccountList)
-                                            {
-                                                <option value="@SoftAccount.Id">@SoftAccount.AccountName</option>
-                                            }
-                                        </datalist>
-                                    </div>
-
-                                }
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="amount" class="control-label">Amount</label>
-                        <input type="number" for="amount" class="form-control" @bind="@record.Amount" placeholder="0.00" />
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="description" class="control-label">Description</label>
-                        <input for="description" class="form-control" @bind="@record.Description" />
-                    </div>
-                </form>
-
-                <button @onclick="@(async () => ProcessClick())" class="btn btn-default">Save</button>
-                <button @onclick="@cancel" class="btn">Cancel</button>
-
+@if (record == null && error == null)
+{
+    <div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden"></span>
+    </div>
+}
+else if (record != null)
+{
+<div class="row">
+    <div class="col-md-6">
+        <form @onsubmit:preventDefault>
+            <div class="form-group">
+                <label for="dateIncurred" class="control-label">Date Incurred</label>
+                <input id="dateIncurred" class="form-control" type="date" @bind="record.DateIncurred" />
             </div>
-        </div>
-
-    }
-</div>
-
-
-
-
-@code {
-
-    public Transaction record = new Transaction { DateIncurred = DateTime.Today };
-
-    public Entry submission = new Entry();
-    int radioSelectCode = 1;
-    private FinancialApp.Data.GeneralAccountEntry selectedGenAcct = new FinancialApp.Data.GeneralAccountEntry();
-    private FinancialApp.Data.AccountEntry selectedSoftAcct = new FinancialApp.Data.AccountEntry();
-    public ListingsResponse listing = new ListingsResponse();
-    public FinancialApp.Data.EventEntry[] eventEntries;
-
-
-    protected override async Task OnInitializedAsync()
-    {
-        HttpResponseMessage response = await Http.GetAsync("api/listings");
-        string responseBody = await response.Content.ReadAsStringAsync();
-        listing = JsonConvert.DeserializeObject<ListingsResponse>(responseBody);
-
-        selectedGenAcct = listing.GeneralAccountEntries[0];
-        eventEntries = listing.EventEntries;
-
-    }
-
-    public async void ProcessClick()
-    {
-
-        if (record.DateIncurred > DateTime.Today)
-        {
-            await JSRuntime.InvokeAsync<bool>("alert", "Cannot submit date in future");
-            return;
-        }
-
-        string output = "The following data has been submitted: \r\nDate: " + record.DateIncurred.ToString("MM/dd/yyyy")
-        + "\nName: " + submission.FirstName
-        + "\nEvent: " + submission.Event
-        + "\nAmount: " + record.Amount
-        + "\nID: " + record.Id;
-
-        if (await JSRuntime.InvokeAsync<bool>("confirm", output))
-        {
-            Console.WriteLine("adding");
-            Console.WriteLine(record.GeneralAccountId);
-
-            SaveTransaction();
-        }
-
-    }
-
-    public void SaveTransaction()
-    {
-        Http.PutAsJsonAsync("api/transaction", record);
-        //navigation.NavigateTo("/transactions");
-    }
-
-    void cancel()
-    {
-        navigation.NavigateTo("/transactions");
-    }
-
-
-    public void SetGeneralAccount(String selectedID)
-    {
-
-        foreach (FinancialApp.Data.GeneralAccountEntry GenAccount in listing.GeneralAccountEntries)
-        {
-            if (GenAccount.Id == selectedID)
+            <div class="form-group">
+                <label for="amount" class="control-label">Amount</label>
+                <input id="amount" class="form-control" type="number" step="0.01" min="0" @bind="record.Amount" />
+            </div>
+            <div class="form-group">
+                <label for="direction" class="control-label">Direction</label>
+                <select id="direction" class="form-control" @bind="record.Direction">
+                    @foreach (var item in Enum.GetValues<DebitCreditType>())
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="method" class="control-label">Transaction Method</label>
+                <select id="method" class="form-control" @bind="record.TransactionMethod">
+                    @foreach (var item in Enum.GetValues<TransactionType>())
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </select>
+            </div>
+            @if (record.TransactionMethod == TransactionType.Check)
             {
-                selectedGenAcct = GenAccount;
-                record.GeneralAccountId = GenAccount.Id;
+            <div class="form-group">
+                <label for="checkNumber" class="control-label">Check Number</label>
+                <input id="checkNumber" class="form-control" @bind="record.CheckNumber" />
+            </div>
             }
-        }
-
-
-
-    }
-    public void SetSoftAccount(String selectedID, bool trans)
-    {
-
-        foreach (FinancialApp.Data.AccountEntry softAccount in selectedGenAcct.SoftAccountList)
-        {
-            if (softAccount.Id == selectedID)
+            @if (record.TransactionMethod == TransactionType.DigitalPayment)
             {
-                selectedSoftAcct = softAccount;
-
+            <div class="form-group">
+                <label for="digitalPaymentInfo" class="control-label">Payment Details</label>
+                <input id="digitalPaymentInfo" class="form-control" @bind="record.DigitalPaymentInfo" />
+            </div>
             }
-        }
-
-        if (trans)
+            @if (record.TransactionMethod != TransactionType.Transfer)
+            {
+            <div class="form-group">
+                <label for="generalAccount" class="control-label">General Account</label>
+                <select id="generalAccount" class="form-control" @bind="record.GeneralAccountId">
+                    <option value="">--None--</option>
+                    @foreach (var account in accounts.Where(a => !a.SoftAccount))
+                    {
+                        <option value="@account.Id">@account.AccountName</option>
+                    }
+                </select>
+            </div>
+            }
+            <div class="form-group">
+                <label for="toAccount" class="control-label">To Account</label>
+                <select id="toAccount" class="form-control" @bind="record.ToAccountId">
+                    <option value="">--None--</option>
+                    @foreach (var account in accounts)
+                    {
+                        <option value="@account.Id">@account.AccountName</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fromAccount" class="control-label">From Account</label>
+                <select id="fromAccount" class="form-control" @bind="record.FromAccountId">
+                    <option value="">--None--</option>
+                    @foreach (var account in accounts)
+                    {
+                        <option value="@account.Id">@account.AccountName</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="event" class="control-label">Event</label>
+                <select id="event" class="form-control" @bind="record.EventId">
+                    <option value="">--None--</option>
+                    @foreach (var ev in events)
+                    {
+                        <option value="@ev.Id">@ev.EventName</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="description" class="control-label">Description</label>
+                <input id="description" class="form-control" @bind="record.Description" />
+            </div>
+        </form>
+        <button @onclick="SaveTransaction" class="btn btn-primary" disabled="@busy">Save</button>
+        <button @onclick="Cancel" class="btn" disabled="@busy">Cancel</button>
+        @if (confirmingDelete)
         {
-            record.FromAccountId = selectedSoftAcct.Id;
-
+            <button @onclick="DeleteTransaction" class="btn btn-danger" disabled="@busy">Confirm delete</button>
+            <button @onclick="@(() => confirmingDelete = false)" class="btn" disabled="@busy">Keep it</button>
         }
         else
         {
-            record.ToAccountId = selectedSoftAcct.Id;
+            <button @onclick="@(() => confirmingDelete = true)" class="btn btn-outline-danger" disabled="@busy">Delete</button>
         }
+    </div>
+</div>
+}
 
+@code {
+    [Parameter]
+    public string id { get; set; }
 
+    private Transaction record;
+    private List<Account> accounts;
+    private List<FinancialEvent> events;
+    private string error;
+    private bool confirmingDelete;
+    private bool busy;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            accounts = (await Http.GetFromJsonAsync<List<Account>>("api/GetAllAccounts") ?? new())
+                .OrderBy(a => a.AccountName).ToList();
+            events = (await Http.GetFromJsonAsync<List<FinancialEvent>>("api/events") ?? new())
+                .OrderBy(e => e.EventName).ToList();
+            record = await Http.GetFromJsonAsync<Transaction>("api/transactions/" + id);
+        }
+        catch (Exception ex)
+        {
+            // Unreachable host, 400/404/500, or a body that isn't the expected shape.
+            record = null;
+            error = "Couldn't load transaction: " + ex.Message;
+        }
     }
 
+    private Task SaveTransaction() => Send(Http.PutAsJsonAsync("api/transactions/" + id, record), "save");
 
+    private Task DeleteTransaction() => Send(Http.DeleteAsync("api/transactions/" + id), "delete");
+
+    // The API reverses and re-applies account balances itself; a failure leaves the user on the form.
+    private async Task Send(Task<HttpResponseMessage> request, string verb)
+    {
+        error = null;
+        busy = true;
+        try
+        {
+            var response = await request;
+            if (response.IsSuccessStatusCode)
+            {
+                navigation.NavigateTo("/transactions");
+                return;
+            }
+            error = $"Couldn't {verb} transaction: {(int)response.StatusCode} {await response.Content.ReadAsStringAsync()}";
+        }
+        catch (Exception ex)
+        {
+            error = $"Couldn't {verb} transaction: " + ex.Message;
+        }
+        finally
+        {
+            busy = false;
+            confirmingDelete = false;
+        }
+    }
+
+    void Cancel()
+    {
+        navigation.NavigateTo("/transactions");
+    }
 }

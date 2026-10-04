@@ -28,7 +28,7 @@
 | T07 | Configure Blazor HttpClient to point at the API | 🔍 In Review | — |
 | T08 | Update Accounts page to correct API routes | 🔍 In Review | T07 |
 | T09 | Build Events page connected to API | 🔍 In Review | T07 |
-| T10 | Build Transactions page connected to API | 🔲 Pending | T07 |
+| T10 | Build Transactions page connected to API | 🔍 In Review | T07 |
 | T11 | Build NewEntry page connected to API | 🔲 Pending | T07 |
 
 ---
@@ -98,7 +98,7 @@ and saves changes back via the API.
 
 **Files:** `FinancialApp/Pages/EditTransactions.razor` (and list page if separate)
 
-**Status:** 🔲 Pending
+**Status:** 🔍 In Review
 **Blocked by:** T07 (T05 done — live routes are `api/transactions`, `api/transactions/{transactionId}`,
 `api/transactions/account/{accountId}`, `api/transactions/event/{eventId}`)
 
